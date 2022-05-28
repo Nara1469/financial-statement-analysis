@@ -1,0 +1,178 @@
+*{
+  font-family: 'Roboto', sans-serif;
+}
+header, .project:not(:last-child) {
+  background-color: #333;
+  border-bottom: 1px solid #ccc;
+}
+
+body{
+  background-color: white;
+}
+
+.no-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #1b89bc;
+  text-decoration: none;
+  font-size: 100%;
+}
+
+.no-button:hover {
+  color: antiquewhite;
+  text-decoration: underline;
+}
+
+.dollar-amount {
+  color: #056605;
+  font-weight: bold;
+  margin-left: -5px;
+}
+
+.navbar {
+  overflow: hidden;
+  background-color: #333;
+
+}
+
+.navbar a {
+  float: left;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  cursor: pointer;
+  font-size: 16px;  
+  /* border: black; */
+  outline: none;
+  color: black;
+  padding: 14px 16px;
+  background-color: white;
+  font-family: inherit;
+  margin: 0;
+  border-color: #333;
+}
+
+.navbar a:hover, .dropdown:hover .dropbtn, .dropbtn:focus {
+  background-color: #065b83;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  float: none;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.show {
+  display: block;
+}
+
+.search-container {
+  float: right;
+}
+
+input[type=text] {
+  padding: 6px;
+  margin-top: 8px;
+  font-size: 17px;
+  /* border: none; */
+}
+
+
+.search-container button {
+  float: right;
+  padding: 6px 10px;
+  margin-top: 8px;
+  margin-right: 16px;
+  background: #ddd;
+  font-size: 17px;
+  border: none;
+  cursor: pointer;
+}
+
+.search-container button:hover {
+  background: #ccc;
+}
+
+.homepage-text{
+  margin: 5 auto;
+}
+
+.intro-text{
+  text-align: center;
+  font-size: 40px;
+}
+
+.intro-body-text{
+  text-align: center;
+  margin: 20px auto;
+}
+
+.example-chart{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+ol{
+  display: table;
+  margin: 0 auto;
+}
+
+.body-text-steps{
+  text-align: center;
+  font-size: 30px;
+}
+
+.text-center{
+  margin-top: 20px;
+  font-size: 35px;
+  text-decoration: underline;
+}
+
+#ratio-text{
+  margin-left: 20px;
+}
+
+#ratio-choice{
+  margin: 10px auto;
+  float: right;
+}
+
+h2{
+  text-align: center;
+  margin-top: 15px;
+}
+
+.logoimage{
+  width: 100px;
+  height: 100px;
+}
