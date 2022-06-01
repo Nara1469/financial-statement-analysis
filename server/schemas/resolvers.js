@@ -1,6 +1,5 @@
 const { AuthenticationError } = require('apollo-server-express');
 const { User } = require('../models');
-// const bookSchema = require('../models/Book');
 const { signToken } = require('../utils/auth');
 
 const resolvers = {
@@ -21,7 +20,7 @@ const resolvers = {
       // Return an `Auth` object that consists of the signed token and user's information
       return ({ token, user });
     },
-    login: async (parent, { email, password }) => {
+    loginUser: async (parent, { email, password }) => {
       // const user = await User.findOne({ $or: [{ username: args.username }, { email: args.email }] });
       const user = await User.findOne({ email });
 
@@ -44,22 +43,22 @@ const resolvers = {
       // Return an `Auth` object that consists of the signed token and user's information
       return ({ token, user });
     },
-    saveBook: async (parent, { bookData }, context) => {
+    saveTicker: async (parent, { portfolioData }, context) => {
       if (context.user) {
         const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
-          { $addToSet: { savedBooks: bookData } },
+          { $addToSet: { userPortfolio: portfolioData } },
           { new: true, runValidators: true }
         );
         return updatedUser;
       }
       throw new AuthenticationError('You need to be logged in!');
     },
-    removeBook: async (parent, { userId, bookId }, context) => {
+    removeTicker: async (parent, { ticker }, context) => {
       if (context.user) {
         const updatedUser = await User.findOneAndUpdate(
-          { _id: userId },
-          { $pull: { savedBooks: { bookId: bookId } } },
+          { _id: context.user._id },
+          { $pull: { userPortfolio: { ticker: ticker } } },
           // Return the newly updated object instead of the original
           { new: true }
         );
