@@ -1,5 +1,11 @@
+:root {
+  --white: whitesmoke;
+  --sapphire: #1e88e5;
+}
+
 body {
-  font-family: 'Rubik', sans-serif;
+  font-family: 'Arial', 'Lucida Sans Unicode', 'Lucida Grande',
+    'Lucida Sans', Arial, sans-serif;
 }
 
 h1,

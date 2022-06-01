@@ -24,37 +24,27 @@ export const ADD_USER = gql`
   }
 `;
 
-export const SAVE_BOOK = gql`
-  mutation saveBook($bookData: BookInput) {
-    saveBook(bookData: $bookData) {
+export const SAVE_TICKER = gql`
+  mutation saveTicker($portfolioData: PortfolioInput) {
+    saveTicker(portfolioData: $portfolioData) {
       _id
       username
       email
-      savedBooks {
-        bookId
-        authors
-        description
-        title
-        image
-        link
+      userPortfolios {
+        ticker
       }
     }
   }
 `;
 
-export const REMOVE_BOOK = gql`
-  mutation removeBook($bookId: ID) {
-    removeBook(bookId: $bookId) {
+export const REMOVE_TICKER = gql`
+  mutation removeTicker($ticker: String) {
+    removeTicker(ticker: $ticker) {
       _id
       username
       email
-      savedBooks {
-        bookId
-        authors
-        description
-        title
-        image
-        link
+      userPortfolios {
+        ticker
       }
     }
   }
