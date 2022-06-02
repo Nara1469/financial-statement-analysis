@@ -2,8 +2,9 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import SearchBooks from './pages/SearchBooks';
-import SavedBooks from './pages/SavedBooks';
+import HomePage from './pages/HomePage';
+import PortfolioPage from './pages/PortfolioPage';
+import RatioPage from './pages/RatioPage';
 import Navbar from './components/Navbar';
 
 // Construct our main GraphQL API endpoint
@@ -39,11 +40,15 @@ function App() {
           <Routes>
             <Route
               path='/'
-              element={<SearchBooks />}
+              element={<HomePage />}
             />
             <Route
-              path='/saved'
-              element={<SavedBooks />}
+              path='/portfolio'
+              element={<PortfolioPage />}
+            />
+                        <Route
+              path='/ratio'
+              element={<RatioPage />}
             />
             <Route
               path='*'
