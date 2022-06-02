@@ -7,7 +7,7 @@ import Auth from '../utils/auth';
 
 const LoginForm = () => {
   const [userFormData, setUserFormData] = useState({ email: '', password: '' });
-  // const [validated] = useState(false);
+  const [validated, setValidated] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [loginUser] = useMutation(LOGIN_USER);
 
@@ -19,20 +19,19 @@ const LoginForm = () => {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    // const form = event.currentTarget;
-    // if (form.checkValidity() === false) {
-    //   event.preventDefault();
-    //   event.stopPropagation();
-    // }
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
     console.log(userFormData);
     try {
-      const { token, user } = await loginUser({
+      const { data } = await loginUser({
         variables: { ...userFormData },
       });
 
-      console.log(user);
-      Auth.login(token);
+      Auth.login(data.loginUser.token);
     } catch (e) {
       console.error(e);
       setShowAlert(true);
@@ -40,7 +39,6 @@ const LoginForm = () => {
 
     // clear form values
     setUserFormData({
-      username: '',
       email: '',
       password: '',
     });
@@ -48,9 +46,9 @@ const LoginForm = () => {
 
   return (
     <>
-      <Form noValidate onSubmit={handleFormSubmit}>
+      <Form noValidate validated={validated} onSubmit={handleFormSubmit}>
         <Alert dismissible onClose={() => setShowAlert(false)} show={showAlert} variant='danger'>
-          Something went wrong with your login credentials!
+          Something went wrong with your loginUser credentials!
         </Alert>
         <Form.Group>
           <Form.Label htmlFor='email'>Email</Form.Label>
