@@ -1,0 +1,47 @@
+:root {
+  --white: whitesmoke;
+  --sapphire: #1e88e5;
+}
+
+body {
+  font-family: 'Arial', 'Lucida Sans Unicode', 'Lucida Grande',
+    'Lucida Sans', Arial, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Rubik Mono One', sans-serif;
+}
+
+.small {
+  font-weight: 300;
+  font-style: italic;
+}
+
+
+.intro-text{
+  text-align: center;
+  font-size: 40px;
+}
+
+.intro-body-text{
+  text-align: center;
+  margin: 20px auto;
+}
+
+.example-chart{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 500px;
+  width: auto;
+}
+
+ol {
+  display: table;
+  margin: 0 auto;
+}
