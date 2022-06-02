@@ -26,6 +26,7 @@ const HomePage = () => {
               <p className="intro-body-text">In this application you will be able to search and compare companies over the past 5 years using their financial ratios so that you may create accurate financial decisions. </p>
                 <Card.Body>
                   <Card.Title>Please follow these steps to get started: </Card.Title>
+    
                   <Card.Text><p className="intro-body-text"> After completing the steps a chart similar to the one below will generate. </p></Card.Text>
                 </Card.Body>
                 <img className="example-chart" src={ImageIntro} alt="Introduction Chart" />
