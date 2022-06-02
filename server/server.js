@@ -12,11 +12,11 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: authMiddleware,
-  csrfPrevention: true,
+  // csrfPrevention: true,
 });
 
 
-app.use(express.urlencoded({ extended: false }));  //true-?
+app.use(express.urlencoded({ extended: false })); 
 app.use(express.json());
 
 // if we're in production, serve client/build as static assets
