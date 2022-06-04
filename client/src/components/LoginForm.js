@@ -25,6 +25,8 @@ const LoginForm = () => {
       event.stopPropagation();
     }
 
+    setValidated(true);
+
     console.log(userFormData);
     try {
       const { data } = await loginUser({
@@ -32,6 +34,8 @@ const LoginForm = () => {
       });
 
       Auth.login(data.loginUser.token);
+      window.location.assign('/portfolio');
+
     } catch (e) {
       console.error(e);
       setShowAlert(true);

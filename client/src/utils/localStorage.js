@@ -14,17 +14,21 @@ export const saveTickerIds = (tickerIdArr) => {
   }
 };
 
-export const removeBookId = (tickerId) => {
+export const removeTickerId = (tickerId) => {
   const savedTickerIds = localStorage.getItem('saved_tickers')
     ? JSON.parse(localStorage.getItem('saved_tickers'))
     : null;
 
+  console.log(savedTickerIds);
+
   if (!savedTickerIds) {
     return false;
   }
-
+  
   const updatedSavedTickerIds = savedTickerIds?.filter((savedTickerId) => savedTickerId !== tickerId);
   localStorage.setItem('saved_tickers', JSON.stringify(updatedSavedTickerIds));
+
+  console.log(updatedSavedTickerIds);
 
   return true;
 };

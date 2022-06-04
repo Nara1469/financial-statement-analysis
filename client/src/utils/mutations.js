@@ -30,7 +30,7 @@ export const SAVE_TICKER = gql`
       _id
       username
       email
-      userPortfolios {
+      userPortfolio {
         ticker
       }
     }
@@ -43,7 +43,7 @@ export const REMOVE_TICKER = gql`
       _id
       username
       email
-      userPortfolios {
+      userPortfolio {
         ticker
       }
     }

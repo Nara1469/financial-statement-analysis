@@ -5,7 +5,7 @@ const typeDefs = gql`
     _id: ID!
     username: String!
     email: String
-    userPortfolio: [Portfolio]!
+    userPortfolio: [Portfolio]
   }
 
   input PortfolioInput {
@@ -13,8 +13,7 @@ const typeDefs = gql`
   }
 
   type Portfolio {
-    _id: ID!
-    ticker: String!
+    ticker: String
   }
 
   type Query {
@@ -29,7 +28,7 @@ const typeDefs = gql`
   type Mutation {
     addUser(username: String!, email: String!, password: String): Auth
     loginUser(email: String!, password: String): Auth
-    saveTicker(ticker: String!): User
+    saveTicker(portfolioData: PortfolioInput): User
     removeTicker(ticker: String): User
   }
 `;
