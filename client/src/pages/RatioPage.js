@@ -1,149 +1,182 @@
 import React, { useState, useEffect } from 'react';
-import { Jumbotron, Container, Col, Form, Button, Card, CardColumns } from 'react-bootstrap';
+import { Container, Form, Col, Button } from 'react-bootstrap';
+import Auth from '../utils/auth';
+import { saveTickerIds, getSavedTickerIds, removeTickerId } from '../utils/localStorage';
+import { useQuery, useMutation } from '@apollo/client';
+import { GET_ME } from '../utils/queries';
+import { SAVE_TICKER, REMOVE_TICKER } from '../utils/mutations';
 
-// import Auth from '../utils/auth';
-// import { saveBookIds, getSavedBookIds } from '../utils/localStorage';
-// import { useMutation } from '@apollo/client';
-// import { SAVE_BOOK } from '../utils/mutations';
 
+const calculateRatio = (symbol) => {
+  const ticker = symbol;
+  // const keyAPI = `17460026230d940ebe74cf92231eb36e`; // nara1
+  // const keyAPI = `d819321c933c451db684ef4a2b41d62d`; // nara2
+  // const keyAPI = `0e0111a172272a2fcfd42016bb1d29cf`; // ethan
+  // const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // brandon
+  const keyAPI = `d819321c933c451db684ef4a2b41d62d`; // nara2
 
-const searchGoogleBooks = (query) => {
-  return fetch(`https://www.googleapis.com/books/v1/volumes?q=${query}`);
+  let balanceSheetURL = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${keyAPI}&limit=120`;
+
+  return fetch(balanceSheetURL);
 };
 
 const RatioPage = () => {
-//   // create state for holding returned google api data
-//   const [searchedBooks, setSearchedBooks] = useState([]);
-//   // create state for holding our search field data
-//   const [searchInput, setSearchInput] = useState('');
+  const { data } = useQuery(GET_ME);
 
-//   // create state to hold saved bookId values
-//   const [savedBookIds, setSavedBookIds] = useState(getSavedBookIds());
-//   const [ saveBook ] = useMutation(SAVE_BOOK);
+  const userData = data?.me || [];
 
-//   // set up useEffect hook to save `savedBookIds` list to localStorage on component unmount
-//   useEffect(() => {
-//     return () => saveBookIds(savedBookIds);
-//   });
+  const userDataLength = Object.keys(userData).length;
 
-//   // create method to search for books and set state on form submit
-//   const handleFormSubmit = async (event) => {
-//     event.preventDefault();
+  // create state for holding returned financialmodelingprep api data for a company
+  const [searchedCompany, setSearchedCompany] = useState([]);
+  // create state for holding our search field data
+  const [searchInput, setSearchInput] = useState('');
+  // create state to hold saved userPortfolio tickers
+  const [savedTickerIds, setSavedTickerIds] = useState(getSavedTickerIds());
 
-//     if (!searchInput) {
-//       return false;
-//     }
+  const [saveTicker] = useMutation(SAVE_TICKER);
+  const [removeTicker] = useMutation(REMOVE_TICKER);
 
-//     try {
-//       const response = await searchGoogleBooks(searchInput);
+  // set up useEffect hook to save `savedTickerIds` list to localStorage on component unmount
+  useEffect(() => {
+    return () => userDataLength;
+  });
 
-//       if (!response.ok) {
-//         throw new Error('something went wrong!');
-//       }
+  // create method to search for tickers and set state on form submit
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
 
-//       const { items } = await response.json();
-//       // Getting Google Books API returns 
-//       const bookData = items.map((book) => ({
-//         bookId: book.id,
-//         authors: book.volumeInfo.authors || ['No author to display'],
-//         title: book.volumeInfo.title,
-//         description: book.volumeInfo.description,
-//         image: book.volumeInfo.imageLinks?.thumbnail || '',
-//       }));
+    if (!searchInput) {
+      return false;
+    }
 
-//       setSearchedBooks(bookData);
-//       setSearchInput('');
-//     } catch (err) {
-//       console.error(err);
-//     }
-//   };
+    try {
+      const response = await calculateRatio(searchInput);
 
-//   // create function to handle saving a book to our database
-//   const handleSaveBook = async (bookId) => {
-//     // find the book in `searchedBooks` state by the matching id
-//     const bookToSave = searchedBooks.find((book) => book.bookId === bookId);
+      if (!response.ok) {
+        throw new Error('something went wrong!');
+      }
 
-//     // get token
-//     const token = Auth.loggedIn() ? Auth.getToken() : null;
+      const { items } = await response.json();
+      // Getting Balance Sheet API returns 
+      const companyData = items.map((company) => ({
+        ticker: company.symbol,
+        calendarYear: company.calendarYear,
+        currentRatio: company.totalCurrentAssets / company.totalCurrentLiabilities,
+        quickRatio: (company.cashAndCashEquivalents + company.netReceivables) / company.totalCurrentLiabilities,
+        workingCapital: company.totalCurrentAssets - company.totalCurrentLiabilities,
+      }));
 
-//     if (!token) {
-//       return false;
-//     }
+      console.log(companyData);
 
-//     try {
-//       await saveBook({
-//         variables: { bookData: bookToSave},
-//       });
+      setSearchedCompany(companyData);
+      setSearchInput('');
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-//       // if book successfully saves to user's account, save book id to state
-//       setSavedBookIds([...savedBookIds, bookToSave.bookId]);
-//     } catch (err) {
-//       console.error(err);
-//     }
-//   };
+  // create function to handle saving a ticker to our database
+  const handleSaveTicker = async (ticker) => {
+    // find the ticker in `userPortfolio` state by the matching name
+    const tickerToSave = ticker;
 
-//   return (
-//     <>
-//       <Jumbotron fluid className='text-light bg-dark'>
-//         <Container>
-//           <h1>Search for Books!</h1>
-//           <Form onSubmit={handleFormSubmit}>
-//             <Form.Row>
-//               <Col xs={12} md={8}>
-//                 <Form.Control
-//                   name='searchInput'
-//                   value={searchInput}
-//                   onChange={(e) => setSearchInput(e.target.value)}
-//                   type='text'
-//                   size='lg'
-//                   placeholder='Search for a book'
-//                 />
-//               </Col>
-//               <Col xs={12} md={4}>
-//                 <Button type='submit' variant='success' size='lg'>
-//                   Submit Search
-//                 </Button>
-//               </Col>
-//             </Form.Row>
-//           </Form>
-//         </Container>
-//       </Jumbotron>
+    // get token
+    const token = Auth.loggedIn() ? Auth.getToken() : null;
 
-//       <Container>
-//         <h2>
-//           {searchedBooks.length
-//             ? `Viewing ${searchedBooks.length} results:`
-//             : 'Search for a book to begin'}
-//         </h2>
-//         <CardColumns>
-//           {searchedBooks.map((book) => {
-//             return (
-//               <Card key={book.bookId} border='dark'>
-//                 {book.image ? (
-//                   <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' />
-//                 ) : null}
-//                 <Card.Body>
-//                   <Card.Title>{book.title}</Card.Title>
-//                   <p className='small'>Authors: {book.authors}</p>
-//                   <Card.Text>{book.description}</Card.Text>
-//                   {Auth.loggedIn() && (
-//                     <Button
-//                       disabled={savedBookIds?.some((savedBookId) => savedBookId === book.bookId)}
-//                       className='btn-block btn-info'
-//                       onClick={() => handleSaveBook(book.bookId)}>
-//                       {savedBookIds?.some((savedBookId) => savedBookId === book.bookId)
-//                         ? 'This book has already been saved!'
-//                         : 'Save this Book!'}
-//                     </Button>
-//                   )}
-//                 </Card.Body>
-//               </Card>
-//             );
-//           })}
-//         </CardColumns>
-//       </Container>
-//     </>
-//   );
+    if (!token) {
+      return false;
+    }
+
+    try {
+      await saveTicker({
+        variables: { portfolioData: tickerToSave },
+      });
+
+      // if ticker successfully saves to user's portfolio, save the ticker to state
+      setSavedTickerIds([...savedTickerIds, tickerToSave]);
+      saveTickerIds(savedTickerIds);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // create function that accepts the userPortfolio's ticker value as param and deletes the ticker from the database
+  const handleDeleteTicker = async (tickerId) => {
+    const token = Auth.loggedIn() ? Auth.getToken() : null;
+
+    if (!token) {
+      return false;
+    }
+
+    try {
+      await removeTicker({
+        variables: { ticker: tickerId },
+      });
+
+      // upon success, remove a ticker from localStorage
+      removeTickerId(tickerId);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // if data isn't here yet, say so
+  if (!userDataLength) {
+    return <h2>LOADING...</h2>;
+  }
+  return (
+    <>
+      <Container fluid className='text-light bg-dark'>
+        <h1>Welcome, {userData.username}!</h1>
+        <Form onSubmit={handleFormSubmit}>
+          <Form.Row>
+            <Col xs={12} md={8}>
+              <Form.Label>Portfolio: </Form.Label>
+              <Form.Control
+                name='searchInput'
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value.toUpperCase())}
+                type='text'
+                size='lg'
+                placeholder='Search for a ticker'
+              />
+            </Col>
+            <Col xs={12} md={4}>
+              <Button type='submit' variant='success' size='lg'>
+                Submit Search
+              </Button>
+            </Col>
+          </Form.Row>
+        </Form>
+        <Button
+          disabled={savedTickerIds?.some((savedTickerId) => savedTickerId === searchedCompany.symbol)}
+          className='btn-block btn-info'
+          onClick={() => handleSaveTicker(searchedCompany.symbol)}>
+          {savedTickerIds?.some((savedTickerId) => savedTickerId === searchedCompany.symbol)
+            ? 'This ticker has already been saved!'
+            : 'Save this Ticker!'}
+        </Button>
+        <Form>
+          {userData.userPortfolio.map((company) => (
+            <div key={`inline-${company.ticker}`} className="mb-3">
+              <Form.Check
+                inline
+                label={company.ticker}
+                name="group1"
+                type="radio"
+                id={company.ticker}
+              />
+              <div className="icons">
+                <p onClick={() => handleDeleteTicker(company.ticker)}> 🗑️</p>
+              </div>
+            </div>
+          ))}
+        </Form>
+      </Container>
+    </>
+  );
 };
 
 export default RatioPage;

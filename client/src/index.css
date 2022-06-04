@@ -45,3 +45,15 @@ ol {
   display: table;
   margin: 0 auto;
 }
+
+.icons {
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.company-logo {
+  width: 100px;
+  height: 100px;
+}

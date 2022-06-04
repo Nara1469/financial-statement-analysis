@@ -28,6 +28,8 @@ const SignupForm = () => {
       event.stopPropagation();
     }
 
+    setValidated(true);
+
     console.log(userFormData);
     try {
       const { data } = await addUser({
@@ -35,6 +37,7 @@ const SignupForm = () => {
       });
 
       Auth.login(data.addUser.token);
+      window.location.assign('/portfolio');
     } catch (err) {
       console.error(err);
       setShowAlert(true);

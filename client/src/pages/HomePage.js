@@ -1,5 +1,5 @@
 import React from 'react';
-import { Jumbotron, Container, CardColumns, Card, Button } from 'react-bootstrap';
+import { Jumbotron, Container, Card } from 'react-bootstrap';
 // import Auth from '../utils/auth';
 import ImageIntro from "../images/intro-chart.jpg";
 
