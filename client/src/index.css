@@ -22,35 +22,12 @@ h6 {
   font-style: italic;
 }
 
-
-.intro-text{
-  text-align: center;
-  font-size: 40px;
-}
-
-.intro-body-text{
-  text-align: center;
-  margin: 20px auto;
-}
-
-.example-chart{
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  height: 500px;
-  width: auto;
-}
-
-ol {
-  display: table;
-  margin: 0 auto;
-}
-
 .icons {
   display: flex;
   align-items: center;
   font-size: 24px;
   cursor: pointer;
+  justify-content: flex-end;
 }
 
 .company-logo {

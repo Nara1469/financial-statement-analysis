@@ -35,7 +35,7 @@ const PortfolioPage = () => {
   const [searchedCompany, setSearchedCompany] = useState([]);
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState('');
-  // create state to hold saved userPortfolio tickers
+  // create state to hold saved userPortfolio tickers. This state variable is used for localStorage 
   const [savedTickerIds, setSavedTickerIds] = useState(getSavedTickerIds());
 
   const [saveTicker] = useMutation(SAVE_TICKER);
@@ -55,7 +55,7 @@ const PortfolioPage = () => {
   //   } else {
   //     return false;
   //   }
-  // }
+  // } 
 
   // set up useEffect hook to save `savedTickerIds` list to localStorage on component unmount
   useEffect(() => {
@@ -90,27 +90,39 @@ const PortfolioPage = () => {
 
   // create function to handle saving a ticker to our database
   const handleSaveTicker = async (ticker) => {
+
     // find the ticker in `userPortfolio` state by the matching name
     const tickerToSave = { ticker };
 
-    // get token
-    const token = Auth.loggedIn() ? Auth.getToken() : null;
+    // const { data } = useQuery(CHECK_TICKER, {
+    //   variables: { userPortfolio: { ticker: ticker } }
+    // });
 
-    if (!token) {
-      return false;
-    }
+    // const portfolioData = data?.checkticker || [];
+    // console.log(portfolioData);
+ 
+    // // if ticker is already saved in the userPortfolio, do not do it again
+    // if (portfolioData.lenght === 0) {
+      // get token
+      const token = Auth.loggedIn() ? Auth.getToken() : null;
 
-    try {
-      await saveTicker({
-        variables: { portfolioData: tickerToSave },
-      });
+      if (!token) {
+        return false;
+      }
 
-      // if ticker successfully saves to user's portfolio, save the ticker to state
-      setSavedTickerIds([...savedTickerIds, ticker]);
-      saveTickerIds(savedTickerIds);
-    } catch (err) {
-      console.error(err);
-    }
+      try {
+        await saveTicker({
+          variables: { portfolioData: tickerToSave },
+        });
+
+        // if ticker successfully saves to user's portfolio, save the ticker to state
+        setSavedTickerIds([...savedTickerIds, ticker]);
+      } catch (err) {
+        console.error(err);
+      }
+    // } else {
+    //   alert(`${ticker} ticker is saved in your Portfolio!`)
+    // }
   };
 
   // create function that accepts the userPortfolio's ticker value as param and deletes the ticker from the database
@@ -142,10 +154,9 @@ const PortfolioPage = () => {
     <>
       <Container fluid className='text-dark bg-blue'>
         <h2 className='text-center'>Welcome, {userData.username}!</h2>
-
-        <Form onSubmit={handleFormSubmit}>
-          <Form.Row>
-            <Col xs={12} md={6}>
+        <Row>
+          <Col xs={12} md={6}>
+            <Form onSubmit={handleFormSubmit}>
               <Form.Label>Portfolio: </Form.Label>
               <Form.Control
                 name='searchInput'
@@ -158,24 +169,24 @@ const PortfolioPage = () => {
               <Button type='submit' variant='primary'>
                 Submit Search
               </Button>
-            </Col>
-            <Col xs={12} md={6}>
-              <h6>
-                {userData.userPortfolio.length
-                  ? `Viewing ${userData.userPortfolio.length} saved ${userData.userPortfolio.length === 1 ? 'company' : 'companies'}:`
-                  : 'You have not add any company in your portfolio!'}
-              </h6>
-              <ListGroup variant="flush">
-                {(userData.userPortfolio.length > 0) && (userData.userPortfolio.map((company) => (
-                  <ListGroup.Item key={`list-${company.ticker}`}>
-                    {company.ticker}
-                    <p className='text-right'><Button variant='light' onClick={() => handleDeleteTicker(company.ticker)}> 🗑️</Button></p>
-                  </ListGroup.Item>
-                )))}
-              </ListGroup>
-            </Col>
-          </Form.Row>
-        </Form>
+            </Form>
+          </Col>
+          <Col xs={12} md={6}>
+            <h6>
+              {userData.userPortfolio.length
+                ? `Viewing ${userData.userPortfolio.length} saved ${userData.userPortfolio.length === 1 ? 'company' : 'companies'}:`
+                : 'You have not add any company in your portfolio!'}
+            </h6>
+            <ListGroup variant="flush">
+              {(userData.userPortfolio.length > 0) && (userData.userPortfolio.map((company) => (
+                <ListGroup.Item key={`list-${company.ticker}`}>
+                  {company.ticker}
+                  <Button variant='light' onClick={() => handleDeleteTicker(company.ticker)}> 🗑️ </Button>
+                </ListGroup.Item>
+              )))}
+            </ListGroup>
+          </Col>
+        </Row>
         {(searchedCompany.length > 0) && (
           <Card key={`info-${searchedCompany[0].symbol}`} border='blue'>
             <Card.Header>{`${searchedCompany[0].companyName}`}</Card.Header>
