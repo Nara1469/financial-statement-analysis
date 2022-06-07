@@ -10,6 +10,14 @@ const resolvers = {
       }
       throw new AuthenticationError('You need to be logged in!');
     },
+    checkticker: async (parent, { ticker }, context) => {
+      if (context.user) {
+        const userData = await User.find({ 
+          _id: context.user._id, 
+          userPortfolio: { ticker: ticker } });
+      }
+      throw new AuthenticationError('You need to be logged in!');
+    },
   },
   Mutation: {
     addUser: async (parent, { username, email, password }) => {

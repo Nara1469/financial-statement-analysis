@@ -1,13 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Form, Col, Button } from 'react-bootstrap';
-import Auth from '../utils/auth';
-import { saveTickerIds, getSavedTickerIds, removeTickerId } from '../utils/localStorage';
-import { useQuery, useMutation } from '@apollo/client';
-import { GET_ME } from '../utils/queries';
-import { SAVE_TICKER, REMOVE_TICKER } from '../utils/mutations';
+import { Container, Form, Row, Col, Button, ListGroup, Card } from 'react-bootstrap';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
 
+// import { saveTickerIds, getSavedTickerIds, removeTickerId } from '../utils/localStorage';
+// import { useQuery, useMutation } from '@apollo/client';
+// import { GET_ME } from '../utils/queries';
 
-const calculateRatio = (symbol) => {
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+// ------------ Variables ----------- 
+const options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Chart.js Line Chart',
+    },
+  },
+};
+
+let companyDataCollection = [];
+let datasetArray = [];
+const labels = ['2017', '2018', '2019', '2020', '2021'];
+const colorArray = ['red', 'blue', 'green', 'purple', 'orange', 'black', 'grey', 'yellow', 'pink', 'navy'];
+const ratioArray = ['Current Ratio', 'Quick Ratio', 'Working Capital'];
+
+let chartData = {
+  labels,
+  datasets: datasetArray,
+};
+
+// ------------ Functions ----------- 
+const calculateRatio = async (symbol) => {
   const ticker = symbol;
   // const keyAPI = `17460026230d940ebe74cf92231eb36e`; // nara1
   // const keyAPI = `d819321c933c451db684ef4a2b41d62d`; // nara2
@@ -17,32 +62,49 @@ const calculateRatio = (symbol) => {
 
   let balanceSheetURL = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${keyAPI}&limit=120`;
 
-  return fetch(balanceSheetURL);
+  const response = await fetch(balanceSheetURL);
+
+  if (!response.ok) {
+    throw new Error('something went wrong!');
+  }
+
+  const items = await response.json();
+
+  const companyData = items.map((company) => ({
+    ticker: company.symbol,
+    calendarYear: company.calendarYear,
+    currentRatio: company.totalCurrentAssets / company.totalCurrentLiabilities,
+    quickRatio: (company.cashAndCashEquivalents + company.netReceivables) / company.totalCurrentLiabilities,
+    workingCapital: company.totalCurrentAssets - company.totalCurrentLiabilities,
+  }));
+
+  console.log(companyData);
+  return companyData;
 };
 
 const RatioPage = () => {
-  const { data } = useQuery(GET_ME);
+  // const { data } = useQuery(GET_ME);
 
-  const userData = data?.me || [];
+  // const userData = data?.me || [];
 
-  const userDataLength = Object.keys(userData).length;
+  // const userDataLength = Object.keys(userData).length;
 
   // create state for holding returned financialmodelingprep api data for a company
-  const [searchedCompany, setSearchedCompany] = useState([]);
+  const [searchedCompany, setSearchedCompany] = useState('');
   // create state for holding our search field data
   const [searchInput, setSearchInput] = useState('');
   // create state to hold saved userPortfolio tickers
-  const [savedTickerIds, setSavedTickerIds] = useState(getSavedTickerIds());
+  // const [savedTickerIds, setSavedTickerIds] = useState(getSavedTickerIds());
+  const [portfolioChoice, setPortfolioChoice] = useState([]);
+  const [ratioChoice, SetRatioChoice] = useState('Current Ratio');
 
-  const [saveTicker] = useMutation(SAVE_TICKER);
-  const [removeTicker] = useMutation(REMOVE_TICKER);
+  // const [companyDataCollection, SetCompanyDataCollection] = useState([]);
 
-  // set up useEffect hook to save `savedTickerIds` list to localStorage on component unmount
   useEffect(() => {
-    return () => userDataLength;
+    return () => portfolioChoice.length;
   });
 
-  // create method to search for tickers and set state on form submit
+  // method to search for tickers and set state on form submit
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
@@ -50,89 +112,128 @@ const RatioPage = () => {
       return false;
     }
 
+    setSearchedCompany(searchInput);
+    setSearchInput('');
+  };
+
+  // collects company data from financialmodelingprep API
+  const collectCompanyData = async (ticker) => {
+
+    if (!portfolioChoice) {
+      companyDataCollection = [];
+      return false;
+    }
+
     try {
-      const response = await calculateRatio(searchInput);
-
-      if (!response.ok) {
-        throw new Error('something went wrong!');
-      }
-
-      const { items } = await response.json();
-      // Getting Balance Sheet API returns 
-      const companyData = items.map((company) => ({
-        ticker: company.symbol,
-        calendarYear: company.calendarYear,
-        currentRatio: company.totalCurrentAssets / company.totalCurrentLiabilities,
-        quickRatio: (company.cashAndCashEquivalents + company.netReceivables) / company.totalCurrentLiabilities,
-        workingCapital: company.totalCurrentAssets - company.totalCurrentLiabilities,
-      }));
-
+      const companyData = await calculateRatio(ticker);
       console.log(companyData);
 
-      setSearchedCompany(companyData);
-      setSearchInput('');
+      for (let i = 4; i >= 0; i--) {
+        const element = companyData[i];
+        companyDataCollection.push(element);
+      }
+
+      console.log(companyDataCollection);
     } catch (err) {
       console.error(err);
     }
+
+    return true;
   };
 
-  // create function to handle saving a ticker to our database
+  const showChart = () => {
+    if (!portfolioChoice) {
+      return false;
+    }
+
+    datasetArray = [];
+    for (let i = 0; i < portfolioChoice.length; i++) {
+      const ticker = portfolioChoice[i];
+      const businessData = [];
+      const companyData = companyDataCollection.map((company) => (company.ticker === ticker));
+      console.log(companyData);
+      switch (ratioChoice) {
+        case 'Current Ratio': {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].currentRatio;
+            businessData.push(element);
+          }
+          break;
+        }
+        case 'Quick Ratio': {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].quickRatio;
+            businessData.push(element);
+          }
+          break;
+        }
+        case 'Working Capital': {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].workingCapitalRatio;
+            businessData.push(element);
+          }
+          break;
+        }
+        default: {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].currentRatio;
+            businessData.push(element);
+          }
+          break;
+        }
+      }
+      console.log(businessData);
+      // Collecting chart dataset
+      datasetArray.push({
+        label: ticker,
+        data: businessData,
+        borderColor: colorArray[i],
+        backgroundColor: colorArray[i],
+      });
+    }
+    console.log(datasetArray);
+
+    chartData = {
+      labels,
+      datasets: datasetArray,
+    };
+
+    return true;
+  };
+
+  // function to handle saving a ticker to portfolioChoice array
   const handleSaveTicker = async (ticker) => {
-    // find the ticker in `userPortfolio` state by the matching name
-    const tickerToSave = ticker;
-
-    // get token
-    const token = Auth.loggedIn() ? Auth.getToken() : null;
-
-    if (!token) {
-      return false;
-    }
-
-    try {
-      await saveTicker({
-        variables: { portfolioData: tickerToSave },
-      });
-
-      // if ticker successfully saves to user's portfolio, save the ticker to state
-      setSavedTickerIds([...savedTickerIds, tickerToSave]);
-      saveTickerIds(savedTickerIds);
-
-    } catch (err) {
-      console.error(err);
+    if (portfolioChoice.includes(ticker)) {
+      console.log(portfolioChoice);
+    } else {
+      setPortfolioChoice([...portfolioChoice, ticker]);
+      collectCompanyData(ticker);
     }
   };
 
-  // create function that accepts the userPortfolio's ticker value as param and deletes the ticker from the database
-  const handleDeleteTicker = async (tickerId) => {
-    const token = Auth.loggedIn() ? Auth.getToken() : null;
+  // function to delete the ticker from portfolioChoice array
+  const handleDeleteTicker = async (ticker) => {
+    const tempArray = portfolioChoice;
 
-    if (!token) {
-      return false;
-    }
+    const updatedArray = tempArray?.filter((item) => item !== ticker) || [];
 
-    try {
-      await removeTicker({
-        variables: { ticker: tickerId },
-      });
-
-      // upon success, remove a ticker from localStorage
-      removeTickerId(tickerId);
-    } catch (err) {
-      console.error(err);
-    }
+    setPortfolioChoice(updatedArray);
   };
 
-  // if data isn't here yet, say so
-  if (!userDataLength) {
-    return <h2>LOADING...</h2>;
-  }
   return (
     <>
-      <Container fluid className='text-light bg-dark'>
-        <h1>Welcome, {userData.username}!</h1>
-        <Form onSubmit={handleFormSubmit}>
-          <Form.Row>
-            <Col xs={12} md={8}>
+      <Container fluid className='text-dark bg-blue'>
+        <h2 className='text-center'>Ratio Analysis</h2>
+        <Row>
+          <Col xs={12} md={4}>
+            <Form.Group className="mb-3" controlId="formBasicRadio">
+              {ratioArray.map((ratio) => (
+                <Form.Check key={`radio-${ratio}`} type="radio" label={`${ratio}`} />
+              ))}
+            </Form.Group>
+          </Col>
+          <Col xs={12} md={4}>
+            <Form onSubmit={handleFormSubmit}>
               <Form.Label>Portfolio: </Form.Label>
               <Form.Control
                 name='searchInput'
@@ -142,38 +243,40 @@ const RatioPage = () => {
                 size='lg'
                 placeholder='Search for a ticker'
               />
-            </Col>
-            <Col xs={12} md={4}>
-              <Button type='submit' variant='success' size='lg'>
+              <Button type='submit' variant='primary'>
                 Submit Search
               </Button>
-            </Col>
-          </Form.Row>
-        </Form>
-        <Button
-          disabled={savedTickerIds?.some((savedTickerId) => savedTickerId === searchedCompany.symbol)}
-          className='btn-block btn-info'
-          onClick={() => handleSaveTicker(searchedCompany.symbol)}>
-          {savedTickerIds?.some((savedTickerId) => savedTickerId === searchedCompany.symbol)
-            ? 'This ticker has already been saved!'
-            : 'Save this Ticker!'}
-        </Button>
-        <Form>
-          {userData.userPortfolio.map((company) => (
-            <div key={`inline-${company.ticker}`} className="mb-3">
-              <Form.Check
-                inline
-                label={company.ticker}
-                name="group1"
-                type="radio"
-                id={company.ticker}
-              />
-              <div className="icons">
-                <p onClick={() => handleDeleteTicker(company.ticker)}> 🗑️</p>
-              </div>
-            </div>
-          ))}
-        </Form>
+            </Form>
+            {(searchedCompany) && (
+              <Card key={`choice-${searchedCompany}`} border='blue'>
+                <Card.Header>{`${searchedCompany}`}</Card.Header>
+                <Button
+                  className='btn-block btn-info' type='primary'
+                  onClick={() => handleSaveTicker(searchedCompany)}> Add
+                </Button>
+              </Card>
+            )}
+          </Col>
+          <Col xs={12} md={4}>
+            <h6>
+              {portfolioChoice.length
+                ? `Viewing ${portfolioChoice.length} saved ${portfolioChoice.length === 1 ? 'company' : 'companies'}:`
+                : 'You have not add any company in your portfolio!'}
+            </h6>
+            <ListGroup variant="flush">
+              {(portfolioChoice.length > 0) && (portfolioChoice.map((company) => (
+                <ListGroup.Item key={`array-${company}`}>
+                  {company}
+                  <Button variant='light' onClick={() => handleDeleteTicker(company)}> 🗑️</Button>
+                </ListGroup.Item>
+              )))}
+            </ListGroup>
+          </Col>
+        </Row>
+        <Button variant='light' onClick={() => showChart()}>Calculate Ratio</Button>
+        <Col>
+          <Line options={options} data={chartData} />;
+        </Col>
       </Container>
     </>
   );

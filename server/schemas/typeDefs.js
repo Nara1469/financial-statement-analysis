@@ -18,6 +18,7 @@ const typeDefs = gql`
 
   type Query {
     me: User
+    checkticker(ticker: String): User
   }
 
   type Auth {
