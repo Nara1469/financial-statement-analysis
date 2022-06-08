@@ -177,7 +177,7 @@ const PortfolioPage = () => {
                 ? `Viewing ${userData.userPortfolio.length} saved ${userData.userPortfolio.length === 1 ? 'company' : 'companies'}:`
                 : 'You have not add any company in your portfolio!'}
             </h6>
-            <ListGroup variant="flush">
+            <ListGroup variant='flush'>
               {(userData.userPortfolio.length > 0) && (userData.userPortfolio.map((company) => (
                 <ListGroup.Item key={`list-${company.ticker}`}>
                   {company.ticker}
