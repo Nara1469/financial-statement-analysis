@@ -27,7 +27,7 @@ ChartJS.register(
 );
 
 // ------------ Variables ----------- 
-const options = {
+let options = {
   responsive: true,
   plugins: {
     legend: {
@@ -42,7 +42,7 @@ const options = {
 
 let companyDataCollection = [];
 let datasetArray = [];
-const labels = ['2017', '2018', '2019', '2020', '2021'];
+let labels = [];
 const colorArray = ['red', 'blue', 'green', 'purple', 'orange', 'black', 'grey', 'yellow', 'pink', 'navy'];
 const ratioArray = ['Current Ratio', 'Quick Ratio', 'Working Capital'];
 
@@ -96,13 +96,15 @@ const RatioPage = () => {
   // create state to hold saved userPortfolio tickers
   // const [savedTickerIds, setSavedTickerIds] = useState(getSavedTickerIds());
   const [portfolioChoice, setPortfolioChoice] = useState([]);
-  const [ratioChoice, SetRatioChoice] = useState('Current Ratio');
+  const [ratioChoice, setRatioChoice] = useState('Current Ratio');
 
   // const [companyDataCollection, SetCompanyDataCollection] = useState([]);
 
   useEffect(() => {
-    return () => portfolioChoice.length;
-  });
+      setRatioChoice('Current Ratio');
+    },
+    [chartData],
+  );
 
   // method to search for tickers and set state on form submit
   const handleFormSubmit = async (event) => {
@@ -145,12 +147,16 @@ const RatioPage = () => {
     if (!portfolioChoice) {
       return false;
     }
+    
+    const choice = ''
+    setRatioChoice(choice);
 
     datasetArray = [];
+    console.log(companyDataCollection);
     for (let i = 0; i < portfolioChoice.length; i++) {
       const ticker = portfolioChoice[i];
       const businessData = [];
-      const companyData = companyDataCollection.map((company) => (company.ticker === ticker));
+      const companyData = companyDataCollection.filter((company) => (company.ticker === ticker));
       console.log(companyData);
       switch (ratioChoice) {
         case 'Current Ratio': {
@@ -192,13 +198,14 @@ const RatioPage = () => {
       });
     }
     console.log(datasetArray);
+    options.plugins.title.text = 'Current Ratio';
+    labels = [...new Set (companyDataCollection.map((item) => item.calendarYear))];
 
     chartData = {
       labels,
       datasets: datasetArray,
     };
-
-    return true;
+    console.log(chartData);
   };
 
   // function to handle saving a ticker to portfolioChoice array
@@ -226,22 +233,33 @@ const RatioPage = () => {
         <h2 className='text-center'>Ratio Analysis</h2>
         <Row>
           <Col xs={12} md={4}>
-            <Form.Group className="mb-3" controlId="formBasicRadio">
-              {ratioArray.map((ratio) => (
-                <Form.Check key={`radio-${ratio}`} type="radio" label={`${ratio}`} />
+            <Form.Group className='mb-3' controlId='formRadio'>
+              <Form.Label as='legend'>
+                Ratio Choice:
+              </Form.Label>
+              <Col sm={{ span: 10, offset: 2 }}>
+              {ratioArray.map((ratio, i) => (
+                <Form.Check 
+                  key={`radio-${i}`} 
+                  type='radio' 
+                  label={`${ratio}`} 
+                  name='radio-ratio'
+                  id={`radio${i}`}
+                />
               ))}
+              </Col>
             </Form.Group>
           </Col>
           <Col xs={12} md={4}>
             <Form onSubmit={handleFormSubmit}>
-              <Form.Label>Portfolio: </Form.Label>
+              <Form.Label>Search for Companies: </Form.Label>
               <Form.Control
                 name='searchInput'
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value.toUpperCase())}
                 type='text'
                 size='lg'
-                placeholder='Search for a ticker'
+                placeholder='Enter a ticker'
               />
               <Button type='submit' variant='primary'>
                 Submit Search
@@ -251,8 +269,12 @@ const RatioPage = () => {
               <Card key={`choice-${searchedCompany}`} border='blue'>
                 <Card.Header>{`${searchedCompany}`}</Card.Header>
                 <Button
+                  disabled={portfolioChoice?.some((savedTicker) => savedTicker === searchedCompany)}
                   className='btn-block btn-info' type='primary'
-                  onClick={() => handleSaveTicker(searchedCompany)}> Add
+                  onClick={() => handleSaveTicker(searchedCompany)}>
+                  {portfolioChoice?.some((savedTicker) => savedTicker === searchedCompany)
+                  ? 'This company ticker has already been saved!'
+                  : 'Save this Company!'}
                 </Button>
               </Card>
             )}
@@ -263,7 +285,7 @@ const RatioPage = () => {
                 ? `Viewing ${portfolioChoice.length} saved ${portfolioChoice.length === 1 ? 'company' : 'companies'}:`
                 : 'You have not add any company in your portfolio!'}
             </h6>
-            <ListGroup variant="flush">
+            <ListGroup variant='flush'>
               {(portfolioChoice.length > 0) && (portfolioChoice.map((company) => (
                 <ListGroup.Item key={`array-${company}`}>
                   {company}
@@ -273,10 +295,10 @@ const RatioPage = () => {
             </ListGroup>
           </Col>
         </Row>
-        <Button variant='light' onClick={() => showChart()}>Calculate Ratio</Button>
-        <Col>
-          <Line options={options} data={chartData} />;
-        </Col>
+        <Button className='btn-block btn-info' type='primary' onClick={() => showChart()}>Calculate Ratio</Button>
+          <Col>
+            <Line options={options} data={chartData} />;
+          </Col>
       </Container>
     </>
   );
