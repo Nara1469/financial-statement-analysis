@@ -42,9 +42,22 @@ let options = {
 
 let companyDataCollection = [];
 let datasetArray = [];
-let labels = [];
+let labels = ['2017', '2018', '2019', '2020', '2021'];
 const colorArray = ['red', 'blue', 'green', 'purple', 'orange', 'black', 'grey', 'yellow', 'pink', 'navy'];
-const ratioArray = ['Current Ratio', 'Quick Ratio', 'Working Capital'];
+const ratioArray = [
+            'Current Ratio', 
+            'Quick Ratio', 
+            'P/E Ratio',
+            'ROA - Return On Assets', 
+            'ROE - Return On Equity', 
+            'ROCE - Return On Capital Employed', 
+            'Interest Coverage Ratio', 
+            'P/B - Price Book Value Ratio', 
+            'D/E - Debt Equity Ratio', 
+            'Debt Ratio', 
+            'Operating Profit Margin', 
+            'Net Profit Margin'
+          ];
 
 let chartData = {
   labels,
@@ -60,22 +73,31 @@ const calculateRatio = async (symbol) => {
   // const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // brandon
   const keyAPI = `d819321c933c451db684ef4a2b41d62d`; // nara2
 
-  let balanceSheetURL = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${keyAPI}&limit=120`;
-
-  const response = await fetch(balanceSheetURL);
+  let ratioURL = `https://financialmodelingprep.com/api/v3/ratios/${ticker}?apikey=${keyAPI}&limit=120`;
+  const response = await fetch(ratioURL);
 
   if (!response.ok) {
     throw new Error('something went wrong!');
   }
 
   const items = await response.json();
+  console.log(items);
 
   const companyData = items.map((company) => ({
     ticker: company.symbol,
-    calendarYear: company.calendarYear,
-    currentRatio: company.totalCurrentAssets / company.totalCurrentLiabilities,
-    quickRatio: (company.cashAndCashEquivalents + company.netReceivables) / company.totalCurrentLiabilities,
-    workingCapital: company.totalCurrentAssets - company.totalCurrentLiabilities,
+    // calendarYear: company.date.getFullYear(),
+    currentRatio: company.currentRatio,
+    quickRatio: company.quickRatio,
+    peRatio: company.priceEarningsRatio,
+    roa: company.returnOnAssets,
+    roe: company.returnOnEquity,
+    roce: company.returnOnCapitalEmployed,
+    interestCoverage: company.interestCoverage,
+    pbRatio: company.priceBookValueRatio,
+    debtEquity: company.debtEquityRatio,
+    debtRatio: company.debtRatio,
+    operatingMargin: company.operatingProfitMargin,
+    netProfitMargin: company.netProfitMargin,
   }));
 
   console.log(companyData);
@@ -98,10 +120,8 @@ const RatioPage = () => {
   const [portfolioChoice, setPortfolioChoice] = useState([]);
   const [ratioChoice, setRatioChoice] = useState('Current Ratio');
 
-  // const [companyDataCollection, SetCompanyDataCollection] = useState([]);
-
   useEffect(() => {
-      setRatioChoice('Current Ratio');
+      // setRatioChoice('Current Ratio');
     },
     [chartData],
   );
@@ -148,9 +168,6 @@ const RatioPage = () => {
       return false;
     }
     
-    const choice = ''
-    setRatioChoice(choice);
-
     datasetArray = [];
     console.log(companyDataCollection);
     for (let i = 0; i < portfolioChoice.length; i++) {
@@ -172,14 +189,77 @@ const RatioPage = () => {
             businessData.push(element);
           }
           break;
-        }
-        case 'Working Capital': {
+        }   
+        case 'P/E Ratio': {
           for (let j = 0; j < companyData.length; j++) {
-            const element = companyData[j].workingCapitalRatio;
+            const element = companyData[j].peRatio;
+            businessData.push(element);
+          }
+          break;
+        }         
+        case 'ROA - Return On Assets': {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].roa;
             businessData.push(element);
           }
           break;
         }
+        case 'ROE - Return On Equity': {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].roe;
+            businessData.push(element);
+          }
+          break;
+        }
+        case 'ROCE - Return On Capital Employed': {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].roce;
+            businessData.push(element);
+          }
+          break;
+        }     
+        case 'Interest Coverage Ratio': {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].interestCoverage;
+            businessData.push(element);
+          }
+          break;
+        }  
+        case 'P/B - Price Book Value Ratio': {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].pbRatio;
+            businessData.push(element);
+          }
+          break;
+        }
+        case 'D/E - Debt Equity Ratio': {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].debtEquity;
+            businessData.push(element);
+          }
+          break;
+        }     
+        case 'Debt Ratio': {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].debtRatio;
+            businessData.push(element);
+          }
+          break;
+        }     
+        case 'Operating Profit Margin': {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].operatingMargin;
+            businessData.push(element);
+          }
+          break;
+        } 
+        case 'Net Profit Margin': {
+          for (let j = 0; j < companyData.length; j++) {
+            const element = companyData[j].netProfitMargin;
+            businessData.push(element);
+          }
+          break;
+        }         
         default: {
           for (let j = 0; j < companyData.length; j++) {
             const element = companyData[j].currentRatio;
@@ -198,8 +278,8 @@ const RatioPage = () => {
       });
     }
     console.log(datasetArray);
-    options.plugins.title.text = 'Current Ratio';
-    labels = [...new Set (companyDataCollection.map((item) => item.calendarYear))];
+    options.plugins.title.text = ratioChoice;
+    // labels = [...new Set (companyDataCollection.map((item) => item.calendarYear))];
 
     chartData = {
       labels,
@@ -245,6 +325,8 @@ const RatioPage = () => {
                   label={`${ratio}`} 
                   name='radio-ratio'
                   id={`radio${i}`}
+                  // checked={ratioChoice === `${ratio}`}
+                  onClick={() => setRatioChoice(`${ratio}`)}
                 />
               ))}
               </Col>
@@ -297,7 +379,7 @@ const RatioPage = () => {
         </Row>
         <Button className='btn-block btn-info' type='primary' onClick={() => showChart()}>Calculate Ratio</Button>
           <Col>
-            <Line options={options} data={chartData} />;
+            <Line options={options} data={chartData} />
           </Col>
       </Container>
     </>
