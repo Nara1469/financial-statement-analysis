@@ -34,3 +34,9 @@ h6 {
   width: 100px;
   height: 100px;
 }
+
+.single-ticker {
+  color: blue;
+  font-weight: bold;
+  text-align: center;
+}
