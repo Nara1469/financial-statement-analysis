@@ -1,9 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Form, Card, Row, Col, Button, ListGroup } from 'react-bootstrap';
-import Auth from '../utils/auth';
-import { useQuery, useMutation } from '@apollo/client';
-import { GET_ME } from '../utils/queries';
-import { SAVE_TICKER, REMOVE_TICKER } from '../utils/mutations';
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Form,
+  Card,
+  Row,
+  Col,
+  Button,
+  ListGroup,
+  Tab,
+  Tabs,
+} from "react-bootstrap";
+import Auth from "../utils/auth";
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_ME } from "../utils/queries";
+import { SAVE_TICKER, REMOVE_TICKER } from "../utils/mutations";
 
 // const KEY = process.env.REACT_APP_API_KEY;
 // console.log(KEY);
@@ -21,11 +31,10 @@ const getCompanyInfo = (symbol) => {
 
   let companyURL = `https://financialmodelingprep.com/api/v3/profile/${ticker}?apikey=${keyAPI}`;
 
-  return fetch(companyURL)
+  return fetch(companyURL);
 };
 
 const PortfolioPage = () => {
-
   const { data } = useQuery(GET_ME);
 
   let userData = data?.me || [];
@@ -35,8 +44,8 @@ const PortfolioPage = () => {
   // create state for holding returned financialmodelingprep api data for a company
   const [searchedCompany, setSearchedCompany] = useState([]);
   // create state for holding our search field data
-  const [searchInput, setSearchInput] = useState('');
-  // create state to hold saved userPortfolio tickers. This state variable is used for localStorage 
+  const [searchInput, setSearchInput] = useState("");
+  // create state to hold saved userPortfolio tickers. This state variable is used for localStorage
   const [userPortfolioArray, setUserPortfolioArray] = useState([]);
 
   const [saveTicker] = useMutation(SAVE_TICKER);
@@ -56,9 +65,11 @@ const PortfolioPage = () => {
     }
 
     if (userPortfolioArray.length === 0) {
-      const currentPortfolio = await userData?.userPortfolio || [];
+      const currentPortfolio = (await userData?.userPortfolio) || [];
       if (currentPortfolio.length > 0) {
-        const userPortfolioData = currentPortfolio.map((company) => (company.ticker));
+        const userPortfolioData = currentPortfolio.map(
+          (company) => company.ticker
+        );
         setUserPortfolioArray(userPortfolioData);
         console.log(userPortfolioArray);
       }
@@ -68,13 +79,13 @@ const PortfolioPage = () => {
       const response = await getCompanyInfo(searchInput);
 
       if (!response.ok) {
-        throw new Error('something went wrong!');
+        throw new Error("something went wrong!");
       }
 
       const data = await response.json();
 
       setSearchedCompany(data);
-      setSearchInput('');
+      setSearchInput("");
     } catch (err) {
       console.error(err);
     }
@@ -82,7 +93,6 @@ const PortfolioPage = () => {
 
   // create function to handle saving a ticker to our database
   const handleSaveTicker = async (ticker) => {
-
     // find the ticker in `userPortfolio` state by the matching name
     const tickerToSave = { ticker };
 
@@ -100,7 +110,6 @@ const PortfolioPage = () => {
       // if ticker successfully saves to user's portfolio, save the ticker to state
       setUserPortfolioArray([...userPortfolioArray, ticker]);
       console.log(userPortfolioArray);
-
     } catch (err) {
       console.error(err);
     }
@@ -120,10 +129,11 @@ const PortfolioPage = () => {
       });
 
       // upon success, remove a ticker from userPortfolioArray
-      const currentPortfolio = userPortfolioArray.filter((company) => (company !== ticker));
+      const currentPortfolio = userPortfolioArray.filter(
+        (company) => company !== ticker
+      );
       setUserPortfolioArray(currentPortfolio);
       console.log(userPortfolioArray);
-
     } catch (err) {
       console.error(err);
     }
@@ -135,21 +145,21 @@ const PortfolioPage = () => {
   }
   return (
     <>
-      <Container fluid className='text-dark bg-blue'>
-        <h2 className='text-center'>Welcome, {userData.username}!</h2>
+      <Container fluid className="text-dark bg-blue">
+        <h2 className="text-center">Welcome, {userData.username}!</h2>
         <Row>
           <Col xs={12} md={6}>
             <Form onSubmit={handleFormSubmit}>
               <Form.Label>Search for Companies: </Form.Label>
               <Form.Control
-                name='searchInput'
+                name="searchInput"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value.toUpperCase())}
-                type='text'
-                size='lg'
-                placeholder='Enter a ticker'
+                type="text"
+                size="lg"
+                placeholder="Enter a ticker"
               />
-              <Button type='submit' variant='primary'>
+              <Button type="submit" variant="primary">
                 Submit Search
               </Button>
             </Form>
@@ -157,49 +167,110 @@ const PortfolioPage = () => {
           <Col xs={12} md={6}>
             <h6>
               {userData.userPortfolio.length
-                ? `${userData.username}'s Portfolio: (${userData.userPortfolio.length} ${userData.userPortfolio.length === 1 ? 'company' : 'companies'} saved)`
-                : 'You have not add any company in your portfolio!'}
+                ? `${userData.username}'s Portfolio: (${
+                    userData.userPortfolio.length
+                  } ${
+                    userData.userPortfolio.length === 1
+                      ? "company"
+                      : "companies"
+                  } saved)`
+                : "You have not add any company in your portfolio!"}
             </h6>
-            <ListGroup variant='flush'>
-              {(userData.userPortfolio.length > 0) && (userData.userPortfolio.map((company) => (
-                <ListGroup.Item key={`list-${company.ticker}`}>
-                  {company.ticker}
-                  <Button variant='light' onClick={() => handleDeleteTicker(company.ticker)}> 🗑️ </Button>
-                </ListGroup.Item>
-              )))}
+            <ListGroup variant="flush">
+              {userData.userPortfolio.length > 0 &&
+                userData.userPortfolio.map((company) => (
+                  <ListGroup.Item key={`list-${company.ticker}`}>
+                    {company.ticker}
+                    <Button
+                      variant="light"
+                      onClick={() => handleDeleteTicker(company.ticker)}
+                    >
+                      {" "}
+                      🗑️{" "}
+                    </Button>
+                  </ListGroup.Item>
+                ))}
             </ListGroup>
           </Col>
         </Row>
-        {(searchedCompany.length > 0) && (
-          <Card key={`info-${searchedCompany[0].symbol}`} border='blue'>
+        {searchedCompany.length > 0 && (
+          <Card key={`info-${searchedCompany[0].symbol}`} border="blue">
             <Card.Header>{`${searchedCompany[0].companyName}`}</Card.Header>
-            <Card.Body>
-              <Row>
-                <Col xs={12} md={8}>
-                  <Card.Text>{`Website: ${searchedCompany[0].website}`}</Card.Text>
-                  <Card.Text>{`Exchange: ${searchedCompany[0].exchangeShortName}`}</Card.Text>
-                  <Card.Text>{`Industry: ${searchedCompany[0].industry}`}</Card.Text>
-                  <Card.Text>{`Sector: ${searchedCompany[0].sector}`}</Card.Text>
-                </Col>
-                <Col xs={12} md={4}>
-                  <Card.Img className='company-logo' src={searchedCompany[0].image} alt='Company Icon' variant='top' />
-                  <Card.Text>{`Ticker: ${searchedCompany[0].symbol}`}</Card.Text>
-                  <Card.Text>{`IPO Date: ${searchedCompany[0].ipoDate}`}</Card.Text>
-                </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <Card.Text>{searchedCompany[0].description}</Card.Text>
-                </Col>
-              </Row>
-            </Card.Body>
+            <Tabs defaultActiveKey="first">
+              <Tab eventKey="first" title="Profile">
+              <Card key={`info-${searchedCompany[0].symbol}`} border="blue">
+                <Card.Body>
+                  <Row>
+                    <Col xs={12} md={8}>
+                      <Card.Text>{`Website: ${searchedCompany[0].website}`}</Card.Text>
+                      <Card.Text>{`Exchange: ${searchedCompany[0].exchangeShortName}`}</Card.Text>
+                      <Card.Text>{`Industry: ${searchedCompany[0].industry}`}</Card.Text>
+                      <Card.Text>{`Sector: ${searchedCompany[0].sector}`}</Card.Text>
+                    </Col>
+                    <Col xs={12} md={4}>
+                      <Card.Img
+                        className="company-logo"
+                        src={searchedCompany[0].image}
+                        alt="Company Icon"
+                        variant="top"
+                      />
+                      <Card.Text>{`Ticker: ${searchedCompany[0].symbol}`}</Card.Text>
+                      <Card.Text>{`IPO Date: ${searchedCompany[0].ipoDate}`}</Card.Text>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <Card.Text>{searchedCompany[0].description}</Card.Text>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+              </Tab>
+              <Tab eventKey="second" title="Financial Summary">
+              <Card key={`info-${searchedCompany[0].symbol}`} border="blue">
+                <Card.Body>
+                  <Row>
+                    <Col xs={12} md={8}>
+                      <Card.Text>{`Symbol: ${searchedCompany[0].website}`}</Card.Text>
+                      <Card.Text>{`Price: ${searchedCompany[0].exchangeShortName}`}</Card.Text>
+                      <Card.Text>{`Industry: ${searchedCompany[0].industry}`}</Card.Text>
+                      <Card.Text>{`Sector: ${searchedCompany[0].sector}`}</Card.Text>
+                    </Col>
+                    <Col xs={12} md={4}>
+                      <Card.Img
+                        className="company-logo"
+                        src={searchedCompany[0].image}
+                        alt="Company Icon"
+                        variant="top"
+                      />
+                      <Card.Text>{`Ticker: ${searchedCompany[0].symbol}`}</Card.Text>
+                      <Card.Text>{`IPO Date: ${searchedCompany[0].ipoDate}`}</Card.Text>
+                    </Col>
+                  </Row>
+                  <Row>
+                    {/* <Button className="btn-block btn-info">
+                    <a href = "/api/v3/income-statement/AAPL?datatype=csv"></a>
+                    </Button> */}
+                  </Row>
+                </Card.Body>
+              </Card>
+                
+
+              </Tab>
+            </Tabs>
             <Button
-              disabled={userPortfolioArray?.some((company) => company === searchedCompany[0].symbol)}
-              className='btn-block btn-info' type='primary'
+              disabled={userPortfolioArray?.some(
+                (company) => company === searchedCompany[0].symbol
+              )}
+              className="btn-block btn-info"
+              variant="info"
               onClick={() => handleSaveTicker(searchedCompany[0].symbol)}>
-              {userPortfolioArray?.some((company) => company === searchedCompany[0].symbol)
-                ? 'This company ticker has already been saved!'
-                : 'Save this Company!'}
+          
+              {userPortfolioArray?.some(
+                (company) => company === searchedCompany[0].symbol
+              )
+                ? "This company ticker has already been saved!"
+                : "Save this Company!"}
             </Button>
           </Card>
         )}
