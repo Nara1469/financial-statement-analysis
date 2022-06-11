@@ -61,8 +61,6 @@ const getPortfolioTableData = async (symbol) => {
     }
 }
 
-ShowPortfolioData();
-
 const getCompanyInfo = (symbol) => {
   const ticker = symbol;
   // const keyAPI = `17460026230d940ebe74cf92231eb36e`; // nara1
