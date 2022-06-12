@@ -117,8 +117,8 @@ const StatementTab = ({ ticker }) => {
 
   return (
     <>
-      <Container fluid className='text-dark bg-blue'>
-        <h5 className='text-center'>Financial Statement</h5>
+      <Container fluid className='bg-light'>
+        <h5 className='text-center text-dark'>Financial Statement</h5>
         {(companyBalanceData.length > 0) && (
           <Row className="justify-content-md-center">
             <Col xs={12} md={6}>

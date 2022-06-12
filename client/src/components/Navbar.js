@@ -12,9 +12,9 @@ const AppNavbar = () => {
 
   return (
     <>
-      <Navbar bg='blue' variant='blue' expand='lg'>
-        <Container fluid>
-          <Navbar.Brand as={Link} to='/'>
+      <Navbar bg='light' variant='light' expand='lg'>
+        <Container fluid >
+          <Navbar.Brand as={Link} to='/' className='font-weight-bold text-primary'>
             Financial Statement Analysis
           </Navbar.Brand>
           <Navbar.Toggle aria-controls='navbar' />
@@ -22,18 +22,18 @@ const AppNavbar = () => {
             <Nav className='ml-auto'>
               {Auth.loggedIn() ? (
                 <>
-                  <Nav.Link as={Link} to='/portfolio'>
+                  <Nav.Link as={Link} to='/portfolio' className='bg-info text-white'>
                     Portfolio
                   </Nav.Link>
-                  <Nav.Link as={Link} to='/ratio'>
+                  <Nav.Link as={Link} to='/ratio' className='bg-info text-white'>
                     Ratio
                   </Nav.Link>
-                  <Nav.Link onClick={Auth.logout}>
+                  <Nav.Link onClick={Auth.logout} className='bg-warning text-dark'>
                     Logout
                   </Nav.Link>
                 </>
               ) : (
-                <Nav.Link onClick={() => setShowModal(true)}>Login/Sign Up</Nav.Link>
+                <Nav.Link onClick={() => setShowModal(true)} className='bg-success text-white'>Login/Sign Up</Nav.Link>
               )}
             </Nav>
           </Navbar.Collapse>
