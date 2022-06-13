@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Form, Card, Row, Col, Button, ListGroup } from 'react-bootstrap';
+import { Container, Form, Card, Row, Col, Button } from 'react-bootstrap';
 import Auth from '../utils/auth';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
@@ -9,11 +9,12 @@ import ProfileTab from '../components/Profile';
 import SummaryTab from '../components/Summary';
 import StatementTab from '../components/Statement';
 
-const getCompanyInfo = (symbol) => {
-  const ticker = symbol;
+
+const getCompanyInfo = (ticker) => {
+
+
   // const keyAPI = `17460026230d940ebe74cf92231eb36e`; // nara1
   // const keyAPI = `d819321c933c451db684ef4a2b41d62d`; // nara2
-  // const keyAPI = `0e0111a172272a2fcfd42016bb1d29cf`; // ethan
   // const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // brandon
 
   const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // brandon
@@ -167,30 +168,39 @@ const PortfolioPage = () => {
                 size='lg'
                 placeholder='Enter a ticker'
               />
-              <br />
-              <Button type='submit' variant='primary'>
+
+              <Button type='submit' variant='primary' className='add-space'>
+
                 Submit Search
               </Button>
             </Form>
           </Col>
           <Col xs={12} md={6}>
-            <h6>
-              {userData.userPortfolio.length
-                ? `${userData.username}'s Portfolio: (${userData.userPortfolio.length} ${userData.userPortfolio.length === 1 ? 'company' : 'companies'} saved)`
-                : 'You have not add any company in your portfolio!'}
-            </h6>
-            <ListGroup variant='flush' className='justify-content-end'>
-              {(userData.userPortfolio.length > 0) && (userData.userPortfolio.map((company) => (
-                <ListGroup.Item key={`list-${company.ticker}`}>
-                  <Button variant='light' onClick={() => setCurrentCompany(company.ticker)}>{company.ticker}</Button>
-                  <Button variant='light' onClick={() => handleDeleteTicker(company.ticker)}> 🗑️ </Button>
-                </ListGroup.Item>
-              )))}
-            </ListGroup>
+            
+            <Card key={`info-portfolio`} border='blue' className='add-space'>
+              <Card.Header>
+                {(userData.userPortfolio.length > 0)
+                  ? `${userData.username}'s Portfolio: (${userData.userPortfolio.length} ${userData.userPortfolio.length === 1 ? 'company' : 'companies'} saved)`
+                  : 'You have not add any company in your portfolio!'}
+              </Card.Header>
+              <Card.Body>
+                {(userData.userPortfolio.length > 0) && (userData.userPortfolio.map((company) => (
+                  <Row key={`info-portfolio-${company.ticker}`}>
+                    <Col xs={8} className='single-ticker'>
+                      <Button  variant='light' onClick={() => setCurrentCompany(company.ticker)}>{company.ticker}</Button>
+                    </Col>
+                    <Col xs={4} className='text-right'>
+                      <Button variant='light' onClick={() => handleDeleteTicker(company.ticker)}> 🗑️ </Button>
+                    </Col>
+                  </Row>
+                )))}
+              </Card.Body>
+            </Card>
           </Col>
         </Row>
         {((searchedCompany.length > 0) && (!currentCompany)) &&
-         (<Card key={`info-${searchedCompany[0].symbol}`} border='blue'>
+          (<Card key={`info-${searchedCompany[0].symbol}`} border='blue'>
+
             <Card.Header>{`${searchedCompany[0].companyName} [${searchedCompany[0].symbol}]`}</Card.Header>
             <Card.Body>
               <Row>
@@ -213,13 +223,19 @@ const PortfolioPage = () => {
             </Card.Body>
             <Button
               disabled={userPortfolioArray?.some((company) => company === searchedCompany[0].symbol)}
-              className='btn-block btn-info' type='primary'
+              className='btn-block btn-primary' type='primary'
               onClick={() => handleSaveTicker(searchedCompany[0].symbol)}>
               {userPortfolioArray?.some((company) => company === searchedCompany[0].symbol)
                 ? 'This company ticker has already been saved!'
                 : 'Save this Company!'}
             </Button>
           </Card>
+          )}
+        {(currentCompany) && (
+          <div className='add-space'>
+            <NavTabs currentPage={currentPage} handlePageChange={handlePageChange} />
+            {renderPage()}
+          </div>
         )}
         {(currentCompany) && (
           <div>

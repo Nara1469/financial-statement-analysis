@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { RatioTable } from '../components/RatioTable';
-import PieGraph from '../components/PieGraph';
-import { Container, Form, Row, Col, Button, ListGroup, InputGroup } from 'react-bootstrap';
+import { Container, Form, Row, Col, Button, Card, InputGroup } from 'react-bootstrap';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -25,21 +24,7 @@ ChartJS.register(
 );
 
 // ------------ Variables ----------- 
-let options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top',
-    },
-    title: {
-      display: true,
-      text: 'Chart.js Line Chart',
-    },
-  },
-};
-
 let companyDataCollection = [];
-let ratioTableCollection = [];
 let datasetArray = [];
 let labels = ['2017', '2018', '2019', '2020', '2021'];
 // let labels = [];
@@ -58,7 +43,18 @@ const ratioArray = [
   'Operating Profit Margin',
   'Net Profit Margin'
 ];
-
+let options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+    },
+    title: {
+      display: true,
+      text: 'Chart.js Line Chart',
+    },
+  },
+};
 let chartData = {
   labels,
   datasets: datasetArray,
@@ -66,13 +62,15 @@ let chartData = {
 
 // ------------ Functions ----------- 
 
-// collects company data from financialmodelingprep API
-const getRatioData = async (symbol) => {
-  const ticker = symbol;
+
+// collects ratio data from financialmodelingprep API
+const getRatioData = async (ticker) => {
 
   // const keyAPI = `17460026230d940ebe74cf92231eb36e`; // nara1
   // const keyAPI = `d819321c933c451db684ef4a2b41d62d`; // nara2
-  const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // Brandon
+  // const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // brandon
+  const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // brandon
+
 
   let ratioURL = `https://financialmodelingprep.com/api/v3/ratios/${ticker}?apikey=${keyAPI}&limit=120`;
   const response = await fetch(ratioURL);
@@ -82,7 +80,7 @@ const getRatioData = async (symbol) => {
   }
 
   const items = await response.json();
-  console.log(items);
+  // console.log(items);
 
   const yearArray = [];
   const currentRatioArray = [];
@@ -140,11 +138,12 @@ const RatioPage = () => {
   // create state to hold saved userPortfolio tickers
   const [portfolioChoice, setPortfolioChoice] = useState([]);
   const [ratioChoice, setRatioChoice] = useState('Current Ratio');
+  const [ratioTable, setRatioTable] = useState([]);
+
 
   useEffect(() => {
-    return () => showTable(ratioChoice);
-  }
-  );
+    showTable();
+  }, [ratioChoice]);
 
   // method to search for tickers and set state on form submit
   const handleFormSubmit = async () => {
@@ -263,14 +262,15 @@ const RatioPage = () => {
     console.log(chartData);
   };
 
-  const showTable = (ratioChoice) => {
-    if (!portfolioChoice) {
+  const showTable = async () => {
+
+    if (portfolioChoice.length === 0) {
       return false;
     }
 
-    ratioTableCollection = [];
     // console.log(companyDataCollection);
     // console.log(ratioChoice);
+    let ratioTableCollection = [];
     switch (ratioChoice) {
       case 'Current Ratio': {
         ratioTableCollection = companyDataCollection.map((company) => ({
@@ -417,7 +417,8 @@ const RatioPage = () => {
       }
     }
     // console.log(ratioTableCollection);
-    return ratioTableCollection;
+    setRatioTable(ratioTableCollection);
+    return true;
   };
 
   return (
@@ -482,34 +483,35 @@ const RatioPage = () => {
             )}
             <Row>
               <Col>
-                <h6>
+              <Card key={`ratio-basket`} border='blue' className='add-space'>
+                <Card.Header>
                   {portfolioChoice.length
-                    ? `Portfolio: (${portfolioChoice.length} ${portfolioChoice.length === 1 ? 'company' : 'companies'})`
-                    : 'You have not add any company in your portfolio!'}
-                </h6>
-                <ListGroup variant='flush' className='align-end'>
-                  {(portfolioChoice.length > 0) && (portfolioChoice.map((company) => (
-                    <ListGroup.Item key={`array-${company}`}>
-                      {company}
-                      <Button variant='light' onClick={() => handleDeleteTicker(company)}> 🗑️</Button>
-                    </ListGroup.Item>
-                  )))}
-                </ListGroup>
+                    ? `Ratio Analysis: (${portfolioChoice.length} ${portfolioChoice.length === 1 ? 'company' : 'companies'})`
+                    : 'You have not add any company in the Ratio Analysis!'}
+                </Card.Header>
+                <Card.Body>
+                  <Row>
+                    {(portfolioChoice.length > 0) && (portfolioChoice.map((company) => (
+                      <Col key={`ratio-basket-${company.ticker}`}>
+                        <Button variant='light'>{company}</Button>
+                        <Button variant='light' onClick={() => handleDeleteTicker(company)} className='delete-mark'> ✘ </Button>
+                      </Col>
+                    )))}
+                  </Row>
+                </Card.Body>
+              </Card>
               </Col>
             </Row>
-            <Row>
-              <Button className='btn-block btn-info' type='primary' onClick={() => showTable(ratioChoice)}>Calculate Ratio</Button>
-              {(ratioTableCollection.length > 0) && (<RatioTable tableData={ratioTableCollection} ratioChoice={ratioChoice} />)}
-            </Row>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            {(ratioTable.length > 0) && (<RatioTable tableData={ratioTable} ratioChoice={ratioChoice} />)}
           </Col>
         </Row>
         <Button className='btn-block btn-info' type='primary' onClick={() => showChart()}>Show Chart</Button>
         <Col>
           {(chartData) && (<Line options={options} data={chartData} />)}
-        </Col>
-        <Button className='btn-block btn-info' type='primary'>Pie Chart</Button>
-        <Col>
-        {/* {(searchedCompany) && (<PieGraph ticker={searchedCompany} />)} */}
         </Col>
       </Container>
     </>
