@@ -33,10 +33,20 @@ h6 {
 .company-logo {
   width: 100px;
   height: 100px;
+  padding: 2%;
 }
 
 .single-ticker {
   color: blue;
   font-weight: bold;
   text-align: center;
+}
+
+.delete-mark {
+  color: red;
+  font-weight: bold;
+}
+
+.add-space {
+  margin-top: 15px;
 }

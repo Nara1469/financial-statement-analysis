@@ -13,29 +13,38 @@ let labels = [
   'Stockholder\'s Equity',
 ];
 const bgColorArray = [
-  'rgba(255, 99, 132, 0.2)',
-  'rgba(54, 162, 235, 0.2)',
+
+  'red',
+  'blue',
+
   'rgba(255, 206, 86, 0.2)',
   'rgba(75, 192, 192, 0.2)',
   'rgba(153, 102, 255, 0.2)',
 ];
 const borderColorArray = [
-  'rgba(255, 99, 132, 0.2)',
-  'rgba(54, 162, 235, 0.2)',
-  'rgba(255, 206, 86, 0.2)',
-  'rgba(75, 192, 192, 0.2)',
-  'rgba(153, 102, 255, 0.2)',
+
+  'rgba(255, 99, 132, 1)',
+  'rgba(54, 162, 235, 1)',
+  'rgba(255, 206, 86, 1)',
+  'rgba(75, 192, 192, 1)',
+  'rgba(153, 102, 255, 1)',
 ];
-
-let symbol = 'AAPL';
-let companyBalanceData = [];
 let dataArray = [];
-
+const options = {
+  layout: {
+    padding: {
+      left: 50
+    }
+  }
+};
+  
 let chartPie = {
   labels,
   datasets: [
     {
-      label: symbol,
+
+      label: '',
+
       data: dataArray,
       borderColor: borderColorArray,
       backgroundColor: bgColorArray,
@@ -44,17 +53,18 @@ let chartPie = {
   ]
 };
 
+const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // brandon
+
 const StatementTab = ({ ticker }) => {
 
-  const [chartPieData, setChartPieData] = useState({});
+  const [companyBalanceData, setCompanyBalanceData] = useState({});
+  const [company, setCompany] = useState('');
 
   useEffect(() => {
-    return () => getChartInfo();
-  }, [ticker, chartPieData]);
+    getChartInfo();
+  }, [ticker]);
 
   const getChartInfo = async () => {
-
-    const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // brandon
 
     const balanceURL = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?apikey=${keyAPI}&limit=120`;
     const response = await fetch(balanceURL);
@@ -66,31 +76,36 @@ const StatementTab = ({ ticker }) => {
     const items = await response.json();
     console.log(items);
 
-    companyBalanceData = items.map((company) => ({
-      symbol: company.symbol,
-      calendarYear: company.calendarYear,
-      totalCurrentAssets: company.totalCurrentAssets,
-      totalNonCurrentAssets: company.totalNonCurrentAssets,
-      totalAssets: company.totalAssets,
-      totalCurrentLiabilities: company.totalCurrentLiabilities,
-      totalNonCurrentLiabilities: company.totalNonCurrentLiabilities,
-      totalEquity: company.totalEquity,
-      totalLiabilitiesAndTotalEuity: company.totalLiabilitiesAndTotalEquity,
-    }));
+
+    const companyData = {
+      symbol: items[0].symbol,
+      calendarYear: items[0].calendarYear,
+      totalCurrentAssets: items[0].totalCurrentAssets,
+      totalNonCurrentAssets: items[0].totalNonCurrentAssets,
+      totalAssets: items[0].totalAssets,
+      totalCurrentLiabilities: items[0].totalCurrentLiabilities,
+      totalNonCurrentLiabilities: items[0].totalNonCurrentLiabilities,
+      totalEquity: items[0].totalEquity,
+      totalLiabilitiesAndTotalEuity: items[0].totalLiabilitiesAndTotalEquity,
+    };
+
+    setCompanyBalanceData(companyData);
+    setCompany(ticker);
     console.log(companyBalanceData);
 
     dataArray = [];
-    dataArray.push(companyBalanceData[0].totalCurrentAssets);
-    dataArray.push(companyBalanceData[0].totalNonCurrentAssets);
-    dataArray.push(companyBalanceData[0].totalCurrentLiabilities);
-    dataArray.push(companyBalanceData[0].totalNonCurrentLiabilities);
-    dataArray.push(companyBalanceData[0].totalEquity);
+    dataArray.push(companyBalanceData.totalCurrentAssets);
+    dataArray.push(companyBalanceData.totalNonCurrentAssets);
+    dataArray.push(companyBalanceData.totalCurrentLiabilities);
+    dataArray.push(companyBalanceData.totalNonCurrentLiabilities);
+    dataArray.push(companyBalanceData.totalEquity);
 
     chartPie = {
       labels: labels,
       datasets: [
         {
-          label: ticker,
+
+          label: company,
           data: dataArray,
           borderColor: borderColorArray,
           backgroundColor: bgColorArray,
@@ -100,46 +115,61 @@ const StatementTab = ({ ticker }) => {
     };
 
     console.log(chartPie);
-    setChartPieData(chartPie)
-  }
 
-  const downloadBalanceFile = async () => {
-
-    const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // brandon
-
-    const downloadBalanceStatementURL = `https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?datatype=csv&apikey=${keyAPI}`;
-    const response = await fetch(downloadBalanceStatementURL);
-
-    if (!response.ok) {
-      throw new Error('something went wrong!');
-    }
   }
 
   return (
     <>
+
       <Container fluid className='bg-light'>
-        <h5 className='text-center text-dark'>Financial Statement</h5>
-        {(companyBalanceData.length > 0) && (
+        <h5 className='text-center text-dark add-space'>Financial Statement</h5>
+        {(companyBalanceData) && (
+
           <Row className="justify-content-md-center">
             <Col xs={12} md={6}>
-              <Card key={`statement-${companyBalanceData[0].symbol}`} border='blue'>
-                <Card.Header>{`Company: ${companyBalanceData[0].symbol}`}</Card.Header>
+              <Card key={`statement-${companyBalanceData.symbol}`} border='blue' className='add-space'>
+                <Card.Header>{`Company: ${companyBalanceData.symbol}`}</Card.Header>
                 <Card.Body>
-                  <Card.Title>{companyBalanceData[0].calendarYear} Financial Statements</Card.Title>
-                  <Row>
+                  <Card.Title className='single-ticker'>{companyBalanceData.calendarYear} Financial Statements</Card.Title>
+                  <Row className='add-space'>
                     <Col>
-                      <Card.Text>Balance Sheet:</Card.Text>
+                      <Card.Text>• Balance Sheet:</Card.Text>
                     </Col>
                     <Col>
-                      <Button className='btn-block btn-info' type='primary' onClick={() => downloadBalanceFile()}>Download</Button>
+                      <a download href={`https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?datatype=csv&apikey=${keyAPI}`}>
+                      <Button className='btn-block btn-primary'>Download</Button>
+                      </a>
+                    </Col>
+                  </Row>
+                  <Row className='add-space'>
+                    <Col>
+                      <Card.Text>• Income Statement:</Card.Text>
+                    </Col>
+                    <Col>
+                      <a download href={`https://financialmodelingprep.com/api/v3/income-statement/${ticker}?datatype=csv&apikey=${keyAPI}`}>
+                      <Button className='btn-block btn-primary'>Download</Button>
+                      </a>
+                    </Col>
+                  </Row>
+                  <Row className='add-space'>
+                    <Col>
+                      <Card.Text>• Cash Flow Statement:</Card.Text>
+                    </Col>
+                    <Col>
+                      <a download href={`https://financialmodelingprep.com/api/v3/cash-flow-statement/${ticker}?datatype=csv&apikey=${keyAPI}`}>
+                      <Button className='btn-block btn-primary'>Download</Button>
+                      </a>
+
                     </Col>
                   </Row>
                 </Card.Body>
               </Card>
             </Col>
             <Col xs={12} md={6}>
-              <h5 className='text-center'>{symbol}</h5>
-              <Pie data={chartPieData} />
+
+              <h5 className='text-center'>{ticker}</h5>
+              <Pie options={options} data={chartPie} />
+
             </Col>
           </Row>
         )}
