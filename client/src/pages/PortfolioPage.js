@@ -154,12 +154,12 @@ const PortfolioPage = () => {
   }
   return (
     <>
-      <Container fluid className='text-dark bg-blue'>
-        <h2 className='text-center'>Welcome, {userData.username}!</h2>
+      <Container fluid>
+        <h2 className='text-center text-white'>Welcome, {userData.username}!</h2>
         <Row>
           <Col xs={12} md={6}>
             <Form onSubmit={handleFormSubmit}>
-              <Form.Label>Search for Companies: </Form.Label>
+              <Form.Label className='text-center'>Search for Companies: </Form.Label>
               <Form.Control
                 name='searchInput'
                 value={searchInput}

@@ -63,9 +63,9 @@ const SummaryTab = ({ ticker }) => {
 
   return (
     <>
-      <Container fluid className='text-dark bg-blue'>
 
-        <h5 className='text-center add-space'>Financial Summary</h5>
+      <Container fluid className='bg-success'>
+        <h5 className='text-center text-white add-space'>Financial Summary</h5>
         {(company) && (
           <Card key={`summary-${company.symbol}`} border='blue' className='add-space'>
 

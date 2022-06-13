@@ -32,9 +32,10 @@ const ProfileTab = ({ ticker }) => {
 
   return (
     <>
-      <Container fluid className='text-dark bg-blue'>
 
-        <h5 className='text-center add-space'>Company Information</h5>
+      <Container fluid className='bg-info'>
+        <h5 className='text-center text-white add-space'>Company Information</h5>
+
         {(company.length > 0) && (
           <Card key={`profile-${company[0].symbol}`} border='blue' className='add-space'>
           

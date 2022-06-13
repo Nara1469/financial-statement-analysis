@@ -120,10 +120,11 @@ const StatementTab = ({ ticker }) => {
 
   return (
     <>
-      <Container fluid className='text-dark bg-blue'>
 
-        <h5 className='text-center add-space'>Financial Statement</h5>
+      <Container fluid className='bg-light'>
+        <h5 className='text-center text-dark add-space'>Financial Statement</h5>
         {(companyBalanceData) && (
+
           <Row className="justify-content-md-center">
             <Col xs={12} md={6}>
               <Card key={`statement-${companyBalanceData.symbol}`} border='blue' className='add-space'>

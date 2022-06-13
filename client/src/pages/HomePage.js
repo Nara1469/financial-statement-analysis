@@ -6,9 +6,9 @@ const HomePage = () => {
 
   return (
     <>
-      <Jumbotron fluid className='text-light bg-blue'>
+      <Jumbotron fluid className='bg-info'>
         <Container>
-          <h1>Welcome!</h1>
+          <h1 className='text-center text-white'>Welcome!</h1>
         </Container>
       </Jumbotron>
       <Container>
