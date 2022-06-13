@@ -9,7 +9,9 @@ import ProfileTab from '../components/Profile';
 import SummaryTab from '../components/Summary';
 import StatementTab from '../components/Statement';
 
+
 const getCompanyInfo = (ticker) => {
+
 
   // const keyAPI = `17460026230d940ebe74cf92231eb36e`; // nara1
   // const keyAPI = `d819321c933c451db684ef4a2b41d62d`; // nara2
@@ -166,12 +168,15 @@ const PortfolioPage = () => {
                 size='lg'
                 placeholder='Enter a ticker'
               />
+
               <Button type='submit' variant='primary' className='add-space'>
+
                 Submit Search
               </Button>
             </Form>
           </Col>
           <Col xs={12} md={6}>
+            
             <Card key={`info-portfolio`} border='blue' className='add-space'>
               <Card.Header>
                 {(userData.userPortfolio.length > 0)
@@ -195,6 +200,7 @@ const PortfolioPage = () => {
         </Row>
         {((searchedCompany.length > 0) && (!currentCompany)) &&
           (<Card key={`info-${searchedCompany[0].symbol}`} border='blue'>
+
             <Card.Header>{`${searchedCompany[0].companyName} [${searchedCompany[0].symbol}]`}</Card.Header>
             <Card.Body>
               <Row>
@@ -227,6 +233,12 @@ const PortfolioPage = () => {
           )}
         {(currentCompany) && (
           <div className='add-space'>
+            <NavTabs currentPage={currentPage} handlePageChange={handlePageChange} />
+            {renderPage()}
+          </div>
+        )}
+        {(currentCompany) && (
+          <div>
             <NavTabs currentPage={currentPage} handlePageChange={handlePageChange} />
             {renderPage()}
           </div>

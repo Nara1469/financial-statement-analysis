@@ -16,6 +16,7 @@ function NavTabs({ currentPage, handlePageChange }) {
         <a
           href="#summary"
           onClick={() => handlePageChange('Financial Summary')}
+
           className={currentPage === 'Financial Summary' ? 'nav-link active' : 'nav-link'}
         >
           Financial Summary

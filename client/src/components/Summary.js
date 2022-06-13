@@ -64,15 +64,19 @@ const SummaryTab = ({ ticker }) => {
   return (
     <>
       <Container fluid className='text-dark bg-blue'>
+
         <h5 className='text-center add-space'>Financial Summary</h5>
         {(company) && (
           <Card key={`summary-${company.symbol}`} border='blue' className='add-space'>
+
             <Card.Header>{company.companyName}</Card.Header>
             <Card.Body>
               <Row>
                 <Col sm={12} md={1}>
                 </Col>
+
                 <Col sm={6} md={2} style={{ fontWeight: 'bold' }}>
+
                   <Card.Text>Symbol:</Card.Text>
                   <Card.Text>Price:</Card.Text>
                   <Card.Text>Beta:</Card.Text>
@@ -90,7 +94,9 @@ const SummaryTab = ({ ticker }) => {
                 </Col>
                 <Col sm={12} md={1}>
                 </Col>
+
                 <Col sm={5} md={2} style={{ fontWeight: 'bold' }}>
+
                   <Card.Text>DCF Unlevered:</Card.Text>
                   <Card.Text>DCF Levered:</Card.Text>
                   <Card.Text>ROE:</Card.Text>

@@ -62,6 +62,7 @@ let chartData = {
 
 // ------------ Functions ----------- 
 
+
 // collects ratio data from financialmodelingprep API
 const getRatioData = async (ticker) => {
 
@@ -69,6 +70,7 @@ const getRatioData = async (ticker) => {
   // const keyAPI = `d819321c933c451db684ef4a2b41d62d`; // nara2
   // const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // brandon
   const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // brandon
+
 
   let ratioURL = `https://financialmodelingprep.com/api/v3/ratios/${ticker}?apikey=${keyAPI}&limit=120`;
   const response = await fetch(ratioURL);
