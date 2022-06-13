@@ -1,6 +1,4 @@
-# Financial Statement Analysis - 
-
-### Table of Contents
+# Financial Statement Analysis
 
 ## User Story
 
