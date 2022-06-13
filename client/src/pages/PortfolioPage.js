@@ -237,12 +237,6 @@ const PortfolioPage = () => {
             {renderPage()}
           </div>
         )}
-        {(currentCompany) && (
-          <div>
-            <NavTabs currentPage={currentPage} handlePageChange={handlePageChange} />
-            {renderPage()}
-          </div>
-        )}
       </Container>
     </>
   );
