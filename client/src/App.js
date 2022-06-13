@@ -46,7 +46,7 @@ function App() {
               path='/portfolio'
               element={<PortfolioPage />}
             />
-                        <Route
+            <Route
               path='/ratio'
               element={<RatioPage />}
             />

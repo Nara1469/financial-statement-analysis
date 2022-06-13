@@ -2,8 +2,8 @@ import { Container, Table } from 'react-bootstrap';
 
 export const RatioTable = ({ tableData, ratioChoice }) => {
   return (
-    <Container fluid>
-      <h5>{ratioChoice}</h5>
+    <Container fluid className='add-space'>
+      <h5>{ratioChoice} In Numbers</h5>
       <Table responsive="sm">
         <thead>
           <tr>
