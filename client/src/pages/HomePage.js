@@ -6,22 +6,24 @@ const HomePage = () => {
 
   return (
     <>
-      <Jumbotron fluid className='text-light bg-blue'>
+      <Jumbotron fluid className='bg-info'>
         <Container>
-          <h1>Welcome!</h1>
+          <h1 className='text-center text-white'>Welcome!</h1>
         </Container>
       </Jumbotron>
       <Container>
         <Card border='blue'>
-          <Card.Text className='text-center'>In this application you will be able to search and compare companies over the past 5 years using their financial ratios so that you may create accurate financial decisions.</Card.Text>
+          <Card.Text className='text-center'>In this application you will be able to search and compare companies over the past 5 years using their financial ratios and other key metrics. With all this this you may do your own reaseach in other to make accurate financial decisions.</Card.Text>
           <Card.Body>
-            <Card.Title>Please follow these steps to get started: </Card.Title>
-            <ol>
-              <li>Sign-up or login by clicking on the Login button in the top right.</li>
-              <li>Search for the company you want to research using the companies stock ticker.</li>
-              <li>Choose the ratio you want to use by utilizing the dropdown menu.</li>
+            <Card.Title className='text-center font-weight-bold'>Please follow these steps to get started: </Card.Title>
+            <ol className='text-monospace'>
+              <li>Sign-up or login by clicking on the "Login/Sign Up" button in the top right.</li>
+              <li>Once signed in you'll see that the "Portfolio" and "Ratio" pages have been made available</li>
+              <li>In your portfolio page search and save companies to your Portfolio and review the profile, financial summary, and financial statment of those companies.</li>
+              <li>In the ratio page search for the companies and metrics of your and use the vizualization tools to draw comparisions.</li>
+              <li>Lastly leave this site better informed to make great financial decisions!</li>
             </ol>
-            <Card.Text className='text-center'>After completing the steps a chart similar to the one below will generate.</Card.Text>
+            <Card.Text className='text-center text-muted'>Vizualization tools similar to the one below can be generated.</Card.Text>
           </Card.Body>
           <Card.Img src={ImageIntro} alt="Introduction Chart" />
         </Card>
