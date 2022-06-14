@@ -34,8 +34,8 @@ npm i
 npm run build
 npm run start
 npm run develop (for developer mode)
-
 ```
+
 MongoDB will be needed to run the application locally.
 
 ## License

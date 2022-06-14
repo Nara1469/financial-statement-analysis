@@ -9,7 +9,9 @@ import ProfileTab from '../components/Profile';
 import SummaryTab from '../components/Summary';
 import StatementTab from '../components/Statement';
 
+
 const getCompanyInfo = (ticker) => {
+
 
   // const keyAPI = `17460026230d940ebe74cf92231eb36e`; // nara1
   // const keyAPI = `d819321c933c451db684ef4a2b41d62d`; // nara2
