@@ -14,7 +14,7 @@ export const GET_ME = gql`
 `;
 
 export const CHECK_TICKER = gql`
-  query checkticker($ticker: String) {
+  query checkticker($ticker: ID) {
     checkticker(ticker: $ticker) {
       _id
       username

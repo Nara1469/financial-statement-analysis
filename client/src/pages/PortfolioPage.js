@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Form, Card, Row, Col, Button } from 'react-bootstrap';
+import { Container, Form, InputGroup, Card, Row, Col, Button } from 'react-bootstrap';
 import Auth from '../utils/auth';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
@@ -30,7 +30,7 @@ const PortfolioPage = () => {
 
   let userData = data?.me || [];
 
-  const userDataLength = Object.keys(userData).length;
+  let userDataLength = Object.keys(userData).length;
 
   // create state for holding returned financialmodelingprep api data for a company
   const [searchedCompany, setSearchedCompany] = useState([]);
@@ -48,7 +48,7 @@ const PortfolioPage = () => {
   // set up useEffect hook to save `savedTickerIds` list to localStorage on component unmount
   useEffect(() => {
     // return () => handleSaveTicker();
-  }, [userPortfolioArray]);
+  }, [currentCompany, userPortfolioArray]);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -66,9 +66,7 @@ const PortfolioPage = () => {
   const handlePageChange = (page) => setCurrentPage(page);
 
   // create method to search for tickers and set state on form submit
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
-
+  const handleFormSubmit = async () => {
     if (!searchInput) {
       return false;
     }
@@ -78,7 +76,7 @@ const PortfolioPage = () => {
       if (currentPortfolio.length > 0) {
         const userPortfolioData = currentPortfolio.map((company) => (company.ticker));
         setUserPortfolioArray(userPortfolioData);
-        console.log(userPortfolioArray);
+        // console.log(userPortfolioArray);
       }
     }
 
@@ -118,7 +116,7 @@ const PortfolioPage = () => {
 
       // if ticker successfully saves to user's portfolio, save the ticker to state
       setUserPortfolioArray([...userPortfolioArray, ticker]);
-      console.log(userPortfolioArray);
+      // console.log(userPortfolioArray);
 
     } catch (err) {
       console.error(err);
@@ -141,7 +139,8 @@ const PortfolioPage = () => {
       // upon success, remove a ticker from userPortfolioArray
       const currentPortfolio = userPortfolioArray.filter((company) => (company !== ticker));
       setUserPortfolioArray(currentPortfolio);
-      console.log(userPortfolioArray);
+      // console.log(userPortfolioArray);
+      setCurrentCompany('');
 
     } catch (err) {
       console.error(err);
@@ -155,28 +154,25 @@ const PortfolioPage = () => {
   return (
     <>
       <Container fluid>
-        <h2 className='text-center text-white'>Welcome, {userData.username}!</h2>
+        <h2 className='text-center text-info'>Welcome, {userData.username}!</h2>
         <Row>
           <Col xs={12} md={6}>
-            <Form onSubmit={handleFormSubmit}>
-              <Form.Label className='text-center'>Search for Companies: </Form.Label>
+            <InputGroup className="mb-3 add-space">
               <Form.Control
+                key={'portfolio-search-input'}
                 name='searchInput'
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value.toUpperCase())}
                 type='text'
                 size='lg'
-                placeholder='Enter a ticker'
+                placeholder='Search for companies'
               />
-
-              <Button type='submit' variant='primary' className='add-space'>
-
-                Submit Search
+              <Button variant="info" id="button-addon2" onClick={() => handleFormSubmit()}>
+                Search
               </Button>
-            </Form>
+            </InputGroup>
           </Col>
           <Col xs={12} md={6}>
-            
             <Card key={`info-portfolio`} border='blue' className='add-space'>
               <Card.Header>
                 {(userData.userPortfolio.length > 0)
@@ -187,7 +183,7 @@ const PortfolioPage = () => {
                 {(userData.userPortfolio.length > 0) && (userData.userPortfolio.map((company) => (
                   <Row key={`info-portfolio-${company.ticker}`}>
                     <Col xs={8} className='single-ticker'>
-                      <Button  variant='light' onClick={() => setCurrentCompany(company.ticker)}>{company.ticker}</Button>
+                      <Button variant='light' onClick={() => setCurrentCompany(company.ticker)}>{company.ticker}</Button>
                     </Col>
                     <Col xs={4} className='text-right'>
                       <Button variant='light' onClick={() => handleDeleteTicker(company.ticker)}> 🗑️ </Button>
@@ -199,9 +195,8 @@ const PortfolioPage = () => {
           </Col>
         </Row>
         {((searchedCompany.length > 0) && (!currentCompany)) &&
-          (<Card key={`info-${searchedCompany[0].symbol}`} border='blue'>
-
-            <Card.Header>{`${searchedCompany[0].companyName} [${searchedCompany[0].symbol}]`}</Card.Header>
+          (<Card key={`info-${searchedCompany[0].symbol}`} border='blue' className='add-space'>
+            <Card.Header style={{fontWeight: 'bold'}}>{`${searchedCompany[0].companyName} [${searchedCompany[0].symbol}]`}</Card.Header>
             <Card.Body>
               <Row>
                 <Col xs={12} md={8}>
@@ -223,7 +218,7 @@ const PortfolioPage = () => {
             </Card.Body>
             <Button
               disabled={userPortfolioArray?.some((company) => company === searchedCompany[0].symbol)}
-              className='btn-block btn-primary' type='primary'
+              className='btn-block btn-info' type='primary'
               onClick={() => handleSaveTicker(searchedCompany[0].symbol)}>
               {userPortfolioArray?.some((company) => company === searchedCompany[0].symbol)
                 ? 'This company ticker has already been saved!'

@@ -9,11 +9,11 @@ const typeDefs = gql`
   }
 
   input PortfolioInput {
-    ticker: String!
+    ticker: ID!
   }
 
   type Portfolio {
-    ticker: String
+    ticker: ID!
   }
 
   type Query {
@@ -30,7 +30,7 @@ const typeDefs = gql`
     addUser(username: String!, email: String!, password: String): Auth
     loginUser(email: String!, password: String): Auth
     saveTicker(portfolioData: PortfolioInput): User
-    removeTicker(ticker: String): User
+    removeTicker(ticker: ID): User
   }
 `;
 
