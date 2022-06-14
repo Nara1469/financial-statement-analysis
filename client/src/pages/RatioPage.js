@@ -138,7 +138,6 @@ const RatioPage = () => {
   const [ratioChoice, setRatioChoice] = useState('Current Ratio');
   const [ratioTable, setRatioTable] = useState([]);
 
-
   useEffect(() => {
     showTable();
   }, [ratioChoice]);
@@ -169,22 +168,30 @@ const RatioPage = () => {
     let updatedArray = tempArray?.filter((item) => item !== ticker) || [];
     setPortfolioChoice(updatedArray);
 
-    // delete  the company from companyDataCollection
+    // delete  the company from companyDataCollection array
     tempArray = companyDataCollection;
     updatedArray = tempArray?.filter((item) => item.ticker !== ticker) || [];
     companyDataCollection = updatedArray;
+
+    // delete the company from ratioTable array
+    tempArray = ratioTable;
+    updatedArray = tempArray?.filter((item) => item.ticker !== ticker) || [];
+    setRatioTable(updatedArray);
   };
 
   const showChart = () => {
     if (!portfolioChoice) {
+      setRatioTable([]);
+      companyDataCollection = [];
+      chartData = {};
       return false;
     }
 
     datasetArray = [];
     let businessData = [];
-    console.log(companyDataCollection);
-    console.log(portfolioChoice);
-    console.log(ratioChoice);
+    // console.log(companyDataCollection);
+    // console.log(portfolioChoice);
+    // console.log(ratioChoice);
     for (let i = 0; i < portfolioChoice.length; i++) {
       const ticker = portfolioChoice[i];
       switch (ratioChoice) {
@@ -263,9 +270,11 @@ const RatioPage = () => {
   const showTable = async () => {
 
     if (portfolioChoice.length === 0) {
+      companyDataCollection = [];
       return false;
     }
 
+    setRatioTable([]);
     // console.log(companyDataCollection);
     // console.log(ratioChoice);
     let ratioTableCollection = [];
@@ -455,7 +464,7 @@ const RatioPage = () => {
                     size='lg'
                     placeholder='Search for companies'
                   />
-                  <Button variant="info" id="button-addon2" onClick={() => handleFormSubmit()}>
+                  <Button variant="primary" id="button-addon2" onClick={() => handleFormSubmit()}>
                     Search
                   </Button>
                 </InputGroup>
@@ -469,7 +478,7 @@ const RatioPage = () => {
                     <Col md={6} className='single-ticker'>{searchedCompany}</Col>
                     <Col md={6}><Button
                       disabled={portfolioChoice?.some((savedTicker) => savedTicker === searchedCompany)}
-                      className='btn-block btn-info' type='primary'
+                      className='btn-block btn-primary'
                       onClick={() => handleSaveTicker(searchedCompany)}>
                       {portfolioChoice?.some((savedTicker) => savedTicker === searchedCompany)
                         ? 'Saved!'
@@ -483,14 +492,14 @@ const RatioPage = () => {
               <Col>
               <Card key={`ratio-basket`} border='blue' className='add-space'>
                 <Card.Header>
-                  {portfolioChoice.length
+                  {(portfolioChoice.length > 0)
                     ? `Ratio Analysis: (${portfolioChoice.length} ${portfolioChoice.length === 1 ? 'company' : 'companies'})`
                     : 'You have not add any company in the Ratio Analysis!'}
                 </Card.Header>
                 <Card.Body>
                   <Row>
-                    {(portfolioChoice.length > 0) && (portfolioChoice.map((company) => (
-                      <Col key={`ratio-basket-${company.ticker}`}>
+                    {(portfolioChoice.length > 0) && (portfolioChoice.map((company, i) => (
+                      <Col key={`ratio-${i}-${company.ticker}`}>
                         <Button variant='light'>{company}</Button>
                         <Button variant='light' onClick={() => handleDeleteTicker(company)} className='delete-mark'> ✘ </Button>
                       </Col>
@@ -507,7 +516,7 @@ const RatioPage = () => {
             {(ratioTable.length > 0) && (<RatioTable tableData={ratioTable} ratioChoice={ratioChoice} />)}
           </Col>
         </Row>
-        <Button className='btn-block btn-info' type='primary' onClick={() => showChart()}>Show Chart</Button>
+        <Button className='btn-block btn-primary' onClick={() => showChart()}>Show Chart</Button>
         <Col>
           {(chartData) && (<Line options={options} data={chartData} />)}
         </Col>

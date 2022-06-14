@@ -38,7 +38,7 @@ export const SAVE_TICKER = gql`
 `;
 
 export const REMOVE_TICKER = gql`
-  mutation removeTicker($ticker: String) {
+  mutation removeTicker($ticker: ID) {
     removeTicker(ticker: $ticker) {
       _id
       username

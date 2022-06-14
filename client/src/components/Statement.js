@@ -118,14 +118,14 @@ const StatementTab = ({ ticker }) => {
               <Card key={`statement-${companyBalanceData.symbol}`} border='blue' className='add-space'>
                 <Card.Header>{`Company: ${companyBalanceData.symbol}`}</Card.Header>
                 <Card.Body>
-                  <Card.Title className='single-ticker'>{companyBalanceData.calendarYear} Financial Statements</Card.Title>
+                  <Card.Title className='text-info text-center' style={{fontWeight: 'bold'}}>{companyBalanceData.calendarYear} Financial Statements</Card.Title>
                   <Row className='add-space'>
                     <Col>
                       <Card.Text>• Balance Sheet:</Card.Text>
                     </Col>
                     <Col>
                       <a download href={`https://financialmodelingprep.com/api/v3/balance-sheet-statement/${ticker}?datatype=csv&apikey=${keyAPI}`}>
-                      <Button className='btn-block btn-primary'>Download</Button>
+                      <Button className='btn-block btn-info'>Download</Button>
                       </a>
                     </Col>
                   </Row>
@@ -135,7 +135,7 @@ const StatementTab = ({ ticker }) => {
                     </Col>
                     <Col>
                       <a download href={`https://financialmodelingprep.com/api/v3/income-statement/${ticker}?datatype=csv&apikey=${keyAPI}`}>
-                      <Button className='btn-block btn-primary'>Download</Button>
+                      <Button className='btn-block btn-info'>Download</Button>
                       </a>
                     </Col>
                   </Row>
@@ -145,7 +145,7 @@ const StatementTab = ({ ticker }) => {
                     </Col>
                     <Col>
                       <a download href={`https://financialmodelingprep.com/api/v3/cash-flow-statement/${ticker}?datatype=csv&apikey=${keyAPI}`}>
-                      <Button className='btn-block btn-primary'>Download</Button>
+                      <Button className='btn-block btn-info'>Download</Button>
                       </a>
                     </Col>
                   </Row>

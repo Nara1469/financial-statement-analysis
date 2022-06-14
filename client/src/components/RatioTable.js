@@ -3,7 +3,7 @@ import { Container, Table } from 'react-bootstrap';
 export const RatioTable = ({ tableData, ratioChoice }) => {
   return (
     <Container fluid className='add-space'>
-      <h5>{ratioChoice} In Numbers</h5>
+      <h5>{ratioChoice}: (in Numbers)</h5>
       <Table responsive="sm">
         <thead>
           <tr>
