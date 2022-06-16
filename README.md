@@ -38,6 +38,8 @@ npm run develop (for developer mode)
 
 MongoDB will be needed to run the application locally.
 
+**Note:** Update ./config/connection.js and the root/ .env as needed for your database info.
+
 ## License
 
 🏆 This application is licensed under GNU GPL v2.

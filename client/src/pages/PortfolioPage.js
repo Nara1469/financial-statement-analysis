@@ -19,7 +19,10 @@ const getCompanyInfo = (ticker) => {
 
   const keyAPI = `2c582395bb4c1edbb8f89db296b46aeb`; // brandon
 
+  // const keyAPI = `${process.env.REACT_APP_API_KEY}`;
+
   let companyURL = `https://financialmodelingprep.com/api/v3/profile/${ticker}?apikey=${keyAPI}`;
+
 
   return fetch(companyURL)
 };
@@ -45,7 +48,6 @@ const PortfolioPage = () => {
   const [saveTicker] = useMutation(SAVE_TICKER);
   const [removeTicker] = useMutation(REMOVE_TICKER);
 
-  // set up useEffect hook to save `savedTickerIds` list to localStorage on component unmount
   useEffect(() => {
     // return () => handleSaveTicker();
   }, [currentCompany, userPortfolioArray]);
@@ -88,6 +90,7 @@ const PortfolioPage = () => {
       }
 
       const data = await response.json();
+      console.log(data);
 
       setSearchedCompany(data);
       setCurrentCompany('');
